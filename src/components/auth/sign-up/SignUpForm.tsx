@@ -1,0 +1,126 @@
+"use client";
+
+import { FormEvent, useState } from "react";
+import { supabase } from "@/src/lib/supabase/client";
+
+type SignUpFormProps = {
+  onSuccess?: (message: string) => void;
+};
+
+const IIN_REGEX = /^\d{12}$/;
+
+export function SignUpForm({ onSuccess }: SignUpFormProps) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [iin, setIin] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setError(null);
+    setSuccessMessage(null);
+
+    if (!IIN_REGEX.test(iin)) {
+      setError("IIN must be exactly 12 digits.");
+      return;
+    }
+
+    setLoading(true);
+
+    const { data, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          iin,
+        },
+      },
+    });
+
+    if (signUpError) {
+      setError(signUpError.message);
+      setLoading(false);
+      return;
+    }
+
+    if (data.session) {
+      const { error: profileError } = await supabase.from("profiles").upsert({
+        id: data.session.user.id,
+        email,
+        iin,
+      });
+
+      if (profileError) {
+        setError(profileError.message);
+        setLoading(false);
+        return;
+      }
+    }
+
+    const message = data.session
+      ? "Account created and signed in."
+      : "Account created. Check your email to confirm and then sign in.";
+
+    onSuccess?.(message);
+    setSuccessMessage(message);
+
+    setEmail("");
+    setPassword("");
+    setIin("");
+    setLoading(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
+      <label className="flex flex-col gap-2 text-sm text-main-text">
+        Email
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          className="rounded-lg border border-break-line px-3 py-2 outline-none focus:border-interactive-color"
+        />
+      </label>
+
+      <label className="flex flex-col gap-2 text-sm text-main-text">
+        Password
+        <input
+          type="password"
+          required
+          minLength={6}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+          className="rounded-lg border border-break-line px-3 py-2 outline-none focus:border-interactive-color"
+        />
+      </label>
+
+      <label className="flex flex-col gap-2 text-sm text-main-text">
+        IIN
+        <input
+          type="text"
+          required
+          inputMode="numeric"
+          pattern="\\d{12}"
+          maxLength={12}
+          value={iin}
+          onChange={(event) => setIin(event.target.value.replace(/\D/g, ""))}
+          className="rounded-lg border border-break-line px-3 py-2 outline-none focus:border-interactive-color"
+        />
+      </label>
+
+      {error ? <p className="text-sm text-error-text">{error}</p> : null}
+      {successMessage ? <p className="text-sm text-success-text">{successMessage}</p> : null}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="rounded-lg bg-interactive-color px-4 py-2 font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+      >
+        {loading ? "Creating..." : "Create account"}
+      </button>
+    </form>
+  );
+}
