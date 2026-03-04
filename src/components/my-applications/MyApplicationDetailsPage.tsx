@@ -33,6 +33,9 @@ export function MyApplicationDetailsPage({
   const [storedApplications, setStoredApplications] = useState<
     ApplicationRecord[]
   >([]);
+  const [isAppealModalOpen, setIsAppealModalOpen] = useState(false);
+  const [appealText, setAppealText] = useState("");
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   useEffect(() => {
     const load = () => {
@@ -135,7 +138,20 @@ export function MyApplicationDetailsPage({
   const translateComment = (value: string) => {
     if (value === "Срок обработки заявки до 5 рабочих дней") return t("comment.processing5days");
     if (value === "Этап пройден") return t("comment.stagePassed");
+    if (value === "Не сдал ФИЗО") return t("comment.failedPhysical");
     return value;
+  };
+
+  const handleOpenAppealModal = () => {
+    setAppealText("");
+    setIsAppealModalOpen(true);
+  };
+
+  const handleSendAppeal = () => {
+    if (!appealText.trim()) return;
+    setIsAppealModalOpen(false);
+    setShowSuccessToast(true);
+    window.setTimeout(() => setShowSuccessToast(false), 2500);
   };
 
   const handleDownloadVvk = () => {
@@ -271,6 +287,12 @@ export function MyApplicationDetailsPage({
                     </thead>
                     <tbody>
                       {application.history.map((historyItem, index) => (
+                        (() => {
+                          const canAppeal =
+                            historyItem.stage === "ФИЗО" &&
+                            historyItem.status === "Заявка отклонена" &&
+                            historyItem.comment === "Не сдал ФИЗО";
+                          return (
                         <tr
                           key={`${historyItem.stage}-${historyItem.date}-${index}`}
                           className="comforta border-b transition duration-300 ease-in-out hover:bg-gray-2 text-center border-black"
@@ -306,6 +328,17 @@ export function MyApplicationDetailsPage({
                             >
                               {translateComment(historyItem.comment)}
                             </span>
+                            {canAppeal ? (
+                              <div className="mt-3">
+                                <button
+                                  type="button"
+                                  onClick={handleOpenAppealModal}
+                                  className="inline-block text-xs text-white bg-red-600 px-4 py-2 rounded hover:bg-red-700"
+                                >
+                                  {t("applications.appeal")}
+                                </button>
+                              </div>
+                            ) : null}
                           </td>
                           <td className="text-md text-gray-900 font-light px-6 py-4">
                             <Link
@@ -316,6 +349,8 @@ export function MyApplicationDetailsPage({
                             </Link>
                           </td>
                         </tr>
+                          );
+                        })()
                       ))}
                     </tbody>
                   </table>
@@ -334,6 +369,61 @@ export function MyApplicationDetailsPage({
           </section>
         </div>
       </main>
+      {isAppealModalOpen ? (
+        <div className="fixed top-0 left-0 w-full h-full outline-none overflow-x-hidden overflow-y-auto z-50 bg-black/50">
+          <div className="modal-dialog modal-lg modal-dialog-centered relative w-auto pointer-events-none mt-12 max-w-3xl mx-auto">
+            <div className="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-md outline-none text-current">
+              <div className="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                <h5 className="text-xl font-medium leading-normal text-gray-800">
+                  {t("applications.appealModalTitle")}
+                </h5>
+                <button
+                  type="button"
+                  aria-label="Close"
+                  className="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 hover:opacity-75"
+                  onClick={() => setIsAppealModalOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="modal-body relative p-4">
+                <label className="comforta cursor-pointer block mb-2 text-md md:text-lg">
+                  {t("applications.appealMessageLabel")}
+                </label>
+                <textarea
+                  rows={8}
+                  className="block px-4 py-2 w-full rounded border-black border-solid border"
+                  value={appealText}
+                  onChange={(event) => setAppealText(event.target.value)}
+                  placeholder={t("applications.appealPlaceholder")}
+                />
+              </div>
+              <div className="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
+                <button
+                  type="button"
+                  className="text-white main-blue-bg text-sm px-8 py-3 mr-3 rounded hover:bg-blue-700 shadow-md disabled:opacity-50"
+                  onClick={handleSendAppeal}
+                  disabled={!appealText.trim()}
+                >
+                  {t("applications.sendAppeal")}
+                </button>
+                <button
+                  type="button"
+                  className="text-white bg-red-600 text-sm px-8 py-3 rounded hover:bg-red-900 shadow-md"
+                  onClick={() => setIsAppealModalOpen(false)}
+                >
+                  {t("application.cancel")}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+      {showSuccessToast ? (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] rounded bg-green-600 text-white px-5 py-3 shadow-lg">
+          {t("applications.appealSuccess")}
+        </div>
+      ) : null}
       <HomeExactSupportButton />
     </>
   );
