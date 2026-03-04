@@ -114,7 +114,7 @@ function VacancyAcademyNav() {
 
 function VacancyCard({ item }: { item: VacancyItem }) {
   return (
-    <div className="grid h-full shadow-lg my-5 w-full py-5 px-5 text-left rounded-2xl" style={{ backgroundColor: "#f5f5f7" }}>
+    <div className="grid shadow-lg my-5 w-full py-5 px-5 text-left rounded-2xl" style={{ backgroundColor: "#f5f5f7" }}>
       <div className="w-full cursor-pointer">
         <span className="sm:flex justify-between mb-4">
           <p className="montserrat text-2xl light-gray-1">{item.title}</p>
@@ -156,7 +156,7 @@ export function VacancyAcademy() {
   return (
     <>
       <VacancyAcademyNav />
-      <main>
+      <main id="main" className="main">
         <div className="container pt-4 mx-auto h-auto text-left">
           <h1 className="light-gray-1 text-2xl px-2">Вакансии для поступления в ВУЗы МВД</h1>
           <p className="text-gray-600 text-sm px-2 mt-2">Всего вакансий: {filteredVacancies.length}</p>
@@ -208,6 +208,7 @@ export function VacancyAcademy() {
             </div>
           </div>
         </div>
+        <div className="h-8" />
       </main>
       <HomeExactSupportButton />
     </>
