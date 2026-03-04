@@ -45,6 +45,10 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
       router.push("/exec/applications");
       return;
     }
+    if (normalizedIin === "777777777777") {
+      router.push("/fizo/applications");
+      return;
+    }
     if (normalizedIin === "444444444444") {
       router.push("/vvk/applications");
       return;

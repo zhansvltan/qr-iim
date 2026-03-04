@@ -34,7 +34,7 @@ export function ExecShell({ children, totalCount }: ExecShellProps) {
       </section>
 
       <section className="lg:flex">
-        <div className="w-60 h-full shadow-md bg-white px-1 mr-2 h-screen flex absolute lg:sticky min-h-full">
+        <div className="w-60 shadow-md bg-white px-1 mr-2 min-h-screen flex absolute lg:sticky min-h-full">
           <ul className="fixed my-8">
             <li className="relative my-2"><Link href="/exec/applications" className="flex items-center text-sm py-4 px-6 h-12 overflow-hidden light-blue text-ellipsis whitespace-nowrap rounded hover:text-gray-900 hover:bg-gray-100 transition duration-300 ease-in-out text-2xl">Заявки</Link></li>
             <li className="relative my-2"><a href="#" className="flex items-center text-sm py-4 px-6 h-12 overflow-hidden light-blue text-ellipsis whitespace-nowrap rounded hover:text-gray-900 hover:bg-gray-100 transition duration-300 ease-in-out text-2xl">Вакансии</a></li>
