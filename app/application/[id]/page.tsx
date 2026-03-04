@@ -1,4 +1,4 @@
-import { ApplicationFormPage } from "@/src/components/application/ApplicationFormPage";
+import { ApplicationFormPage } from "@/src/components/application/application-form/ApplicationFormPage";
 
 type ApplicationPageProps = {
   params: Promise<{

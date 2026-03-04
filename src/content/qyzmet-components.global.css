@@ -1580,7 +1580,7 @@ main.main#main { flex: 1 1 auto; }
 
 .see__more:hover, .see__more:hover path { stroke: var(--interactive-elems); color: var(--interactive-elems); }
 
-.container { max-width: 1200px; margin: 0px auto; }
+.container { margin: 0px auto; }
 
 .main-blue-bg, .main-blue-bg-opacity { background: var(--interactive-elems); }
 

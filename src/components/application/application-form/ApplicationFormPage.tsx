@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { HomeExactSupportButton } from "@/src/components/home/HomeExactSupportButton";
 import {
@@ -9,7 +10,7 @@ import {
   subscribeToLocalAuthChanges,
 } from "@/src/lib/auth/localAuth";
 import { getVacancyById } from "@/src/lib/vacancyData";
-import { HomeExactNavbar } from "../home/HomeExactNav";
+import { HomeExactNavbar } from "../../home/HomeExactNav";
 
 type RelativeItem = {
   fullName: string;
@@ -39,6 +40,7 @@ function RequiredMark() {
 }
 
 export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
+  const router = useRouter();
   const session = useSyncExternalStore(
     subscribeToLocalAuthChanges,
     getCurrentLocalSession,
@@ -119,6 +121,14 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
     return () => window.clearTimeout(timeout);
   }, [showSuccessToast]);
 
+  useEffect(() => {
+    if (!success) return;
+    const timeout = window.setTimeout(() => {
+      router.push("/my-applications");
+    }, 1000);
+    return () => window.clearTimeout(timeout);
+  }, [router, success]);
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError(null);
@@ -156,6 +166,9 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
       vacancyTitle: vacancy.title,
       academy: vacancy.academy,
       specialization: vacancy.specialization,
+      stage: "Принято в работу",
+      status: "В работе",
+      comment: "Срок обработки заявки до 5 рабочих дней",
       region: vacancy.region,
       district: vacancy.district,
       user: {

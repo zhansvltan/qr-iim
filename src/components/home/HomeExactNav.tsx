@@ -37,12 +37,12 @@ export function HomeExactNavbar() {
                 </a>
               </li> */}
               <li className="nav-item p-2">
-                <a
+                <Link
                   className="nav-link text-white hover:main-color focus:text-blue-400 p-0"
-                  href="#"
+                  href="/my-applications"
                 >
                   Менің өтініштерім
-                </a>
+                </Link>
               </li>
             </ul>
             <div className="flex items-center relative">
