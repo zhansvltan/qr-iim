@@ -1,6 +1,10 @@
+"use client";
 import Link from "next/link";
+import { useI18n } from "@/src/lib/i18n";
 
 export function HomeExactHeader() {
+  const { locale, setLocale, t } = useI18n();
+
   return (
     <>
       <header id="header_head" style={{ background: "url('/ornament.png')" }}>
@@ -8,9 +12,21 @@ export function HomeExactHeader() {
           <div className="header__items__head">
             <div className="header__buttons" />
             <div className="header__buttons">
-              <a className="header__button button__language active"> Қаз </a>
+              <button
+                type="button"
+                className={`header__button button__language ${locale === "kk" ? "active" : ""}`}
+                onClick={() => setLocale("kk")}
+              >
+                {t("lang.kk")}
+              </button>
               <span>|</span>
-              <a className="header__button button__language"> Рус </a>
+              <button
+                type="button"
+                className={`header__button button__language ${locale === "ru" ? "active" : ""}`}
+                onClick={() => setLocale("ru")}
+              >
+                {t("lang.ru")}
+              </button>
             </div>
           </div>
         </div>
@@ -42,7 +58,7 @@ export function HomeExactHeader() {
           }}
         >
           <source src="/bg-video.mp4" type="video/mp4" />
-          Your browser does not support HTML5 video.
+          {t("header.videoUnsupported")}
         </video>
         <div
           className="grid grid-cols-3 gap-4 w-full"
@@ -60,7 +76,7 @@ export function HomeExactHeader() {
             <div>
               <div className="text-center">QYZMET-POLICE.KZ</div>
               <div className="text-center text-2xl mt-4">
-                Осы жылы қабылданды: 4876
+                {t("header.acceptedThisYear")}
               </div>
             </div>
           </div>

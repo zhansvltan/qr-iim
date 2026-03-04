@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useI18n } from "@/src/lib/i18n";
 
 export function HomeExactFooter() {
+  const { t } = useI18n();
+
   return (
     <footer id="footer" className="footer">
       <div className="container">
@@ -11,22 +16,18 @@ export function HomeExactFooter() {
                 <Link href='/'>
                   <img
                     src="/logo.png"
-                    alt="Министерство Внутренних Дел Республики Казахстан"
+                    alt={t("footer.ministryAlt")}
                     className="footer__logo-image"
                   />
                 </Link>
-                <h4 className="footer__title">
-                  Қазақстан Республикасының
-                  <br />
-                  Ішкі істер министрлігі
-                </h4>
+                <h4 className="footer__title">{t("footer.ministryTitle")}</h4>
               </div>
             </div>
             <div className="footer__center footer__links">
               <ul className="footer__list">
                 <li>
                   <a className="footer__link" href="#vacancies__pre">
-                    Бос лауазымдар
+                    {t("footer.vacancies")}
                   </a>
                 </li>
               </ul>
@@ -35,7 +36,7 @@ export function HomeExactFooter() {
               <ul className="footer__list">
                 <li>
                   <a className="footer__link" href="/sign-in">
-                    Менің өтініштерім
+                    {t("footer.myApplications")}
                   </a>
                 </li>
               </ul>
@@ -43,7 +44,7 @@ export function HomeExactFooter() {
           </div>
           <div className="footer__bottom">
             <p className="footer__copyright">
-              Copyright © 2024 | All Rights Reserved
+              {t("footer.copyright")}
             </p>
           </div>
         </div>

@@ -10,8 +10,8 @@ import {
   mapStoredApplication,
   MOCK_APPLICATIONS,
 } from "@/src/lib/myApplicationsData";
-import { UserAreaNav } from "./UserAreaNav";
 import { HomeExactNavbar } from "../home/HomeExactNav";
+import { useI18n } from "@/src/lib/i18n";
 
 const APPLICATIONS_STORAGE_KEY = "qyzmet_applications";
 
@@ -29,6 +29,7 @@ function getStatusClass(status: string) {
 export function MyApplicationDetailsPage({
   id,
 }: MyApplicationDetailsPageProps) {
+  const { t } = useI18n();
   const [storedApplications, setStoredApplications] = useState<
     ApplicationRecord[]
   >([]);
@@ -96,12 +97,12 @@ export function MyApplicationDetailsPage({
         <HomeExactNavbar />
         <main id="main" className="main">
           <div className="container mx-auto py-8">
-            <h1 className="light-gray-1 text-2xl px-2">Заявка не найдена</h1>
+            <h1 className="light-gray-1 text-2xl px-2">{t("applications.notFound")}</h1>
             <Link
               href="/my-applications"
               className="inline-block mt-4 text-white bg-red-600 text-sm px-8 py-3 rounded hover:bg-red-900"
             >
-              Вернуться к списку заявок
+              {t("applications.backToList")}
             </Link>
           </div>
         </main>
@@ -112,13 +113,38 @@ export function MyApplicationDetailsPage({
 
   const isRejected = application.status.toLowerCase().includes("отклон");
 
+  const translateStatus = (value: string) => {
+    if (value === "Заявка отклонена") return t("status.rejected");
+    if (value === "В работе") return t("status.inProgress");
+    if (value === "Заявка принята") return t("status.accepted");
+    return value;
+  };
+
+  const translateStage = (value: string) => {
+    if (value === "Документы отправлены") return t("stage.documentsSent");
+    if (value === "Принято в работу") return t("stage.acceptedForWork");
+    if (value === "Медобследование") return t("stage.medExam");
+    if (value === "Полиграф") return t("stage.polygraph");
+    if (value === "ФИЗО") return t("stage.physical");
+    if (value === "Тестирование") return t("stage.testing");
+    if (value === "Конкурсная комиссия") return t("stage.commission");
+    if (value === "Учебное заведение" || value === "Зачисление в ВУЗ") return t("stage.academy");
+    return value;
+  };
+
+  const translateComment = (value: string) => {
+    if (value === "Срок обработки заявки до 5 рабочих дней") return t("comment.processing5days");
+    if (value === "Этап пройден") return t("comment.stagePassed");
+    return value;
+  };
+
   return (
     <>
       <HomeExactNavbar />
       <main id="main" className="main">
         <div className="container mx-auto h-auto pt-2 pb-2 text-center">
           <h1 className="montserrat-bolder font-bold light-gray-1 text-2xl capitalize px-2">
-            Заявка № {Number(application.id).toLocaleString("ru-RU")}
+            {t("applications.request")} {Number(application.id).toLocaleString("ru-RU")}
           </h1>
           <hr className="w-20 h-0.5 mx-auto" />
 
@@ -128,7 +154,7 @@ export function MyApplicationDetailsPage({
                 className="montserrat-bolder light-blue my-4 text-md px-2 underline"
                 href={`/my-applications/${application.id}`}
               >
-                Просмотр
+                {t("applications.view")}
               </Link>
             </span>
 
@@ -149,7 +175,7 @@ export function MyApplicationDetailsPage({
                         key={stage}
                         className={`md:w-1/5 ${stateClass} sm:w-1/2 w-11/12`}
                       >
-                        <a>{stage}</a>
+                        <a>{translateStage(stage)}</a>
                       </li>
                     );
                   })}
@@ -187,7 +213,7 @@ export function MyApplicationDetailsPage({
                     type="button"
                     className="inline-block text-center w-64 text-white bg-emerald-600 mt-2 text-sm px-8 py-3 rounded hover:bg-emerald-700"
                   >
-                    Скачать направление на ВВК
+                    {t("applications.downloadVvk")}
                   </button>
                 </div>
 
@@ -199,37 +225,37 @@ export function MyApplicationDetailsPage({
                           scope="col"
                           className="text-md font-medium text-black px-6 py-4"
                         >
-                          Номер заявки
+                          {t("applications.number")}
                         </th>
                         <th
                           scope="col"
                           className="text-md font-medium text-black px-6 py-4"
                         >
-                          Дата
+                          {t("applications.date")}
                         </th>
                         <th
                           scope="col"
                           className="text-md font-medium text-black px-6 py-4"
                         >
-                          Этап
+                          {t("applications.stage")}
                         </th>
                         <th
                           scope="col"
                           className="text-md font-medium text-black px-6 py-4"
                         >
-                          Статус
+                          {t("applications.status")}
                         </th>
                         <th
                           scope="col"
                           className="text-md font-medium text-black px-6 py-4"
                         >
-                          Комментарий
+                          {t("applications.comment")}
                         </th>
                         <th
                           scope="col"
                           className="text-md font-medium text-black px-6 py-4"
                         >
-                          Детали
+                          {t("applications.details")}
                         </th>
                       </tr>
                     </thead>
@@ -241,7 +267,7 @@ export function MyApplicationDetailsPage({
                         >
                           <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
                             <Link href={`/my-applications/${application.id}`}>
-                              Заявка №{" "}
+                              {t("applications.request")}{" "}
                               {Number(application.id).toLocaleString("ru-RU")}
                             </Link>
                           </td>
@@ -249,26 +275,26 @@ export function MyApplicationDetailsPage({
                             {formatDate(historyItem.date)}
                           </td>
                           <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                            {historyItem.stage}
+                            {translateStage(historyItem.stage)}
                           </td>
                           <td className="text-md text-gray-900 font-light px-6 py-4">
                             <span
                               className={getStatusClass(historyItem.status)}
                             >
-                              {historyItem.status}
+                              {translateStatus(historyItem.status)}
                             </span>
                           </td>
                           <td className="text-md text-gray-900 font-light px-6 py-4">
                             <span
                               className={
-                                historyItem.comment
+                                translateComment(historyItem.comment)
                                   .toLowerCase()
-                                  .includes("пройден")
+                                  .includes(t("comment.stagePassed").toLowerCase())
                                   ? "text-green-500"
                                   : ""
                               }
                             >
-                              {historyItem.comment}
+                              {translateComment(historyItem.comment)}
                             </span>
                           </td>
                           <td className="text-md text-gray-900 font-light px-6 py-4">
@@ -276,7 +302,7 @@ export function MyApplicationDetailsPage({
                               href={`/my-applications/${application.id}`}
                               className="font-bold underline cursor-pointer text-gray-700"
                             >
-                              Просмотр
+                              {t("applications.view")}
                             </Link>
                           </td>
                         </tr>
@@ -291,7 +317,7 @@ export function MyApplicationDetailsPage({
                   href="/my-applications"
                   className="inline-block text-center w-52 text-white bg-red-600 mt-5 text-sm px-8 py-3 rounded hover:bg-red-900"
                 >
-                  Назад
+                  {t("applications.back")}
                 </Link>
               </div>
             </div>

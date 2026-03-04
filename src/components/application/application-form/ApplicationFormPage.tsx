@@ -11,6 +11,7 @@ import {
 } from "@/src/lib/auth/localAuth";
 import { getVacancyById } from "@/src/lib/vacancyData";
 import { HomeExactNavbar } from "../../home/HomeExactNav";
+import { useI18n } from "@/src/lib/i18n";
 
 type RelativeItem = {
   fullName: string;
@@ -23,23 +24,13 @@ type ApplicationFormPageProps = {
   vacancyId: string;
 };
 
-const EDUCATION_OPTIONS = [
-  "Дошкольное",
-  "Основное общее среднее (9 классов)",
-  "Общее среднее (11 классов)",
-  "Неоконченное профессиональное среднее (проф.школы, проф.лицеи, колледжи)",
-  "Профессиональное среднее (проф.школы, проф.лицеи, колледжи)",
-  "Неоконченное высшее",
-  "Высшее",
-  "Послевузовское Высшее",
-];
-
 const APPLICATIONS_STORAGE_KEY = "qyzmet_applications";
 function RequiredMark() {
   return <span className="text-red-600 ml-1">*</span>;
 }
 
 export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
+  const { t } = useI18n();
   const router = useRouter();
   const session = useSyncExternalStore(
     subscribeToLocalAuthChanges,
@@ -78,6 +69,16 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
   const fullName = [user?.surname, user?.name, user?.patronymic]
     .filter(Boolean)
     .join(" ");
+  const EDUCATION_OPTIONS = [
+    t("education.1"),
+    t("education.2"),
+    t("education.3"),
+    t("education.4"),
+    t("education.5"),
+    t("education.6"),
+    t("education.7"),
+    t("education.8"),
+  ];
 
   const addRelative = () => {
     if (
@@ -86,7 +87,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
       !relativeBirthYear.trim() ||
       !relativeIin.trim()
     ) {
-      setRelativeModalError("Заполните все поля для родственника.");
+      setRelativeModalError(t("application.error.fillRelative"));
       return;
     }
 
@@ -135,27 +136,27 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
     setSuccess(null);
 
     if (!vacancy) {
-      setError("Вакансия не найдена.");
+      setError(t("application.notFound"));
       return;
     }
 
     if (!session || !user) {
-      setError("Для подачи заявки необходимо авторизоваться.");
+      setError(t("application.error.needAuth"));
       return;
     }
 
     if (!education || !isServedContractInNGRK || !isServedInPolice) {
-      setError("Заполните обязательные поля формы.");
+      setError(t("application.error.fillRequired"));
       return;
     }
 
     if (!isChildOfKilledOfficer || !hasEntOver100 || !hasAltynBelgi) {
-      setError("Заполните обязательные поля формы.");
+      setError(t("application.error.fillRequired"));
       return;
     }
 
     if (!consent) {
-      setError("Необходимо дать согласие на обработку персональных данных.");
+      setError(t("application.error.needConsent"));
       return;
     }
 
@@ -199,7 +200,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
     const next = Array.isArray(existing) ? [...existing, payload] : [payload];
     window.localStorage.setItem(APPLICATIONS_STORAGE_KEY, JSON.stringify(next));
 
-    setSuccess("Заявка успешно сохранена.");
+    setSuccess(t("application.successSaved"));
     setShowSuccessToast(true);
   };
 
@@ -209,12 +210,12 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
         <HomeExactNavbar />
         <main id="main" className="main">
           <div className="container mx-auto py-8">
-            <p className="light-gray-1 text-xl">Вакансия не найдена.</p>
+            <p className="light-gray-1 text-xl">{t("application.notFound")}</p>
             <Link
               href="/vacancy-academy"
               className="inline-block mt-4 text-white bg-red-600 text-sm px-8 py-3 rounded hover:bg-red-900"
             >
-              Вернуться к вакансиям
+              {t("application.backToVacancies")}
             </Link>
           </div>
         </main>
@@ -230,7 +231,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
         <section>
           <div className="container mx-auto h-auto py-4 text-left">
             <h1 className="light-gray-1 text-2xl px-2">
-              Подача заявки на обучение в ВУЗ-ах МВД
+              {t("application.title")}
             </h1>
             <form onSubmit={handleSubmit} noValidate>
               <div
@@ -239,7 +240,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
               >
                 <div className="col-span-12 md:col-span-12 px-4">
                   <p className="font-normal text-black my-4 text-xl px-2">
-                    Анкета кандидата
+                    {t("application.candidateForm")}
                   </p>
                   <div className="text-left">
                     <div className="flex flex-row gap-10">
@@ -248,7 +249,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           htmlFor="vacancyTitle"
                           className="comforta cursor-pointer"
                         >
-                          Академия
+                          {t("vacancy.academy")}
                         </label>
                         <input
                           id="vacancyTitle"
@@ -263,7 +264,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           htmlFor="education"
                           className="comforta required cursor-pointer"
                         >
-                          Образование
+                          {t("application.education")}
                           <RequiredMark />
                         </label>
                         <select
@@ -273,7 +274,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           value={education}
                           onChange={(event) => setEducation(event.target.value)}
                         >
-                          <option value="">Выберите образование</option>
+                          <option value="">{t("application.selectEducation")}</option>
                           {EDUCATION_OPTIONS.map((item) => (
                             <option key={item} value={item}>
                               {item}
@@ -288,7 +289,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           htmlFor="name"
                           className="comforta cursor-pointer"
                         >
-                          Ф.И.О
+                          {t("application.fullName")}
                         </label>
                         <input
                           id="name"
@@ -304,7 +305,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           htmlFor="iin"
                           className="comforta cursor-pointer"
                         >
-                          ИИН
+                          {t("application.relativeIin")}
                         </label>
                         <input
                           id="iin"
@@ -321,7 +322,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           htmlFor="specialization"
                           className="comforta cursor-pointer"
                         >
-                          Специальность
+                          {t("application.speciality")}
                         </label>
                         <input
                           id="specialization"
@@ -339,7 +340,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           htmlFor="regionVacancy"
                           className="comforta cursor-pointer"
                         >
-                          Область
+                          {t("application.region")}
                         </label>
                         <input
                           id="regionVacancy"
@@ -355,7 +356,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           htmlFor="phone"
                           className="comforta cursor-pointer"
                         >
-                          Телефон
+                          {t("application.phone")}
                         </label>
                         <input
                           id="phone"
@@ -373,7 +374,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           htmlFor="email"
                           className="comforta cursor-pointer"
                         >
-                          Электронная почта
+                          {t("application.email")}
                         </label>
                         <input
                           id="email"
@@ -390,14 +391,14 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
 
                 <div className="col-span-12 md:col-span-12 px-4">
                   <p className="font-normal text-black my-4 text-xl px-2">
-                    Дополнительные документы
+                    {t("application.extraDocs")}
                   </p>
                   <div className="text-left">
                     <div className="flex flex-row gap-10">
                       <div className="form-group w-1/2 text-md md:text-lg py-4">
                         <p className="comforta cursor-pointer">
                           <label className="required">
-                            Документ об образовании с приложением(PDF)
+                            {t("application.eduDoc")}
                             <RequiredMark />
                           </label>
                         </p>
@@ -407,7 +408,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                               htmlFor="diploma"
                               className="cursor-pointer text-sm"
                             >
-                              Прикрепить
+                              {t("application.attach")}
                             </label>
                             <input
                               id="diploma"
@@ -452,7 +453,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                       <div className="form-group w-1/2 text-md md:text-lg py-4">
                         <p className="comforta cursor-pointer">
                           <label className="required">
-                            Результаты ЕНТ (PDF)
+                            {t("application.entDoc")}
                             <RequiredMark />
                           </label>
                         </p>
@@ -462,7 +463,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                               htmlFor="officerTestCertificate"
                               className="cursor-pointer text-sm"
                             >
-                              Прикрепить
+                              {t("application.attach")}
                             </label>
                             <input
                               id="officerTestCertificate"
@@ -486,7 +487,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     </div>
 
                     <label className="comforta required cursor-pointer">
-                      Служили ли вы по контракту в НГ РК?
+                      {t("application.servedContract")}
                       <RequiredMark />
                     </label>
                     <select
@@ -497,12 +498,12 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                       }
                     >
                       <option value="">—</option>
-                      <option value="Да">Да</option>
-                      <option value="Нет">Нет</option>
+                      <option value={t("common.yes")}>{t("common.yes")}</option>
+                      <option value={t("common.no")}>{t("common.no")}</option>
                     </select>
 
                     <label className="comforta required cursor-pointer">
-                      Служили ли вы ранее в органах полиции?
+                      {t("application.servedPolice")}
                       <RequiredMark />
                     </label>
                     <select
@@ -511,13 +512,12 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                       onChange={(event) => setIsServedInPolice(event.target.value)}
                     >
                       <option value="">—</option>
-                      <option value="Да">Да</option>
-                      <option value="Нет">Нет</option>
+                      <option value={t("common.yes")}>{t("common.yes")}</option>
+                      <option value={t("common.no")}>{t("common.no")}</option>
                     </select>
 
                     <label className="comforta required cursor-pointer">
-                      Являетесь ли вы ребёнком сотрудника ОВД, погибшего или
-                      получившего увечье при исполнении
+                      {t("application.childOfOfficer")}
                       <RequiredMark />
                     </label>
                     <select
@@ -528,13 +528,12 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                       }
                     >
                       <option value="">—</option>
-                      <option value="Да">Да</option>
-                      <option value="Нет">Нет</option>
+                      <option value={t("common.yes")}>{t("common.yes")}</option>
+                      <option value={t("common.no")}>{t("common.no")}</option>
                     </select>
 
                     <label className="comforta required cursor-pointer">
-                      Являетесь ли вы обладателем сертификата более 100 баллов
-                      на ЕНТ
+                      {t("application.ent100")}
                       <RequiredMark />
                     </label>
                     <select
@@ -543,12 +542,12 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                       onChange={(event) => setHasEntOver100(event.target.value)}
                     >
                       <option value="">—</option>
-                      <option value="Да">Да</option>
-                      <option value="Нет">Нет</option>
+                      <option value={t("common.yes")}>{t("common.yes")}</option>
+                      <option value={t("common.no")}>{t("common.no")}</option>
                     </select>
 
                     <label className="comforta required cursor-pointer">
-                      Являетесь ли вы обладателем «Алтын белгі»
+                      {t("application.altynBelgi")}
                       <RequiredMark />
                     </label>
                     <select
@@ -557,8 +556,8 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                       onChange={(event) => setHasAltynBelgi(event.target.value)}
                     >
                       <option value="">—</option>
-                      <option value="Да">Да</option>
-                      <option value="Нет">Нет</option>
+                      <option value={t("common.yes")}>{t("common.yes")}</option>
+                      <option value={t("common.no")}>{t("common.no")}</option>
                     </select>
 
                     <div className="flex items-center my-2">
@@ -574,8 +573,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                         htmlFor="confirmation"
                         className="ml-2 montserrat light-gray-1 cursor-pointer"
                       >
-                        Я даю согласие на сбор и обработку своих Персональных
-                        данных
+                        {t("application.consent")}
                         <RequiredMark />
                       </label>
                     </div>
@@ -585,7 +583,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                 <div className="col-span-12 px-4 my-5 comfortaa">
                   <p className="font-normal text-black my-4 text-xl px-2">
                     <label className="required">
-                      Анкета на близких родственников
+                      {t("application.relativesForm")}
                       <RequiredMark />
                     </label>
                   </p>
@@ -600,25 +598,25 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                             scope="col"
                             className="text-md md:text-lg font-medium text-black px-6 py-4 text-left"
                           >
-                            ФИО
+                            {t("application.relativeFio")}
                           </th>
                           <th
                             scope="col"
                             className="text-md md:text-lg font-medium text-black px-6 py-4 text-left"
                           >
-                            Статус
+                            {t("application.relativeStatus")}
                           </th>
                           <th
                             scope="col"
                             className="text-md md:text-lg font-medium text-black px-6 py-4 text-left"
                           >
-                            Год рождения
+                            {t("application.relativeBirthYear")}
                           </th>
                           <th
                             scope="col"
                             className="text-md md:text-lg font-medium text-black px-6 py-4 text-left"
                           >
-                            ИИН
+                            {t("application.relativeIin")}
                           </th>
                           <th />
                         </tr>
@@ -639,7 +637,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                                 onClick={() => removeRelative(index)}
                                 className="text-red-600"
                               >
-                                Удалить
+                                {t("application.delete")}
                               </button>
                             </td>
                           </tr>
@@ -674,7 +672,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     type="submit"
                     className="montserrat inline-block text-white bg-red-600 mt-5 text-sm px-8 py-3 rounded hover:bg-red-900"
                   >
-                    Подать заявку
+                    {t("application.submit")}
                   </button>
                 </div>
               </div>
@@ -700,7 +698,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
               <div className="modal-body relative p-4 w-full">
                 <div className="form-group my-4 text-md md:text-lg">
                   <label htmlFor="fio" className="comforta cursor-pointer">
-                    ФИО
+                    {t("application.relativeFio")}
                   </label>
                   <input
                     id="fio"
@@ -712,7 +710,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                 </div>
                 <div className="form-group my-4 text-md md:text-lg">
                   <label htmlFor="relativeStatus" className="comforta cursor-pointer">
-                    Статус
+                    {t("application.relativeStatus")}
                   </label>
                   <input
                     id="relativeStatus"
@@ -724,7 +722,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                 </div>
                 <div className="form-group my-4 text-md md:text-lg">
                   <label htmlFor="relativeBirthday" className="comforta cursor-pointer">
-                    Год рождения
+                    {t("application.relativeBirthYear")}
                   </label>
                   <input
                     id="relativeBirthday"
@@ -737,7 +735,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                 </div>
                 <div className="form-group my-4 text-md md:text-lg">
                   <label htmlFor="relativeIIN" className="comforta cursor-pointer">
-                    ИИН
+                    {t("application.relativeIin")}
                   </label>
                   <input
                     id="relativeIIN"
@@ -759,14 +757,14 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                   className="text-white main-blue-bg mt-5 text-sm px-8 py-3 mr-3 rounded hover:bg-blue-700 shadow-md"
                   onClick={addRelative}
                 >
-                  Сохранить
+                  {t("application.save")}
                 </button>
                 <button
                   type="button"
                   className="text-white bg-red-600 mt-5 text-sm px-8 py-3 ml-3 rounded hover:bg-red-900 shadow-md"
                   onClick={() => setIsRelativeModalOpen(false)}
                 >
-                  Отменить
+                  {t("application.cancel")}
                 </button>
               </div>
             </div>
@@ -775,7 +773,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
       ) : null}
       {showSuccessToast ? (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] rounded bg-green-600 text-white px-5 py-3 shadow-lg">
-          Заявление подано успешно
+          {t("application.successToast")}
         </div>
       ) : null}
       <HomeExactSupportButton />

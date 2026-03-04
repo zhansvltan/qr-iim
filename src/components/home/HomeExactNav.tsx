@@ -3,8 +3,10 @@
 import { useSyncExternalStore } from "react";
 import { getCurrentLocalSession, signOutLocalUser, subscribeToLocalAuthChanges } from "@/src/lib/auth/localAuth";
 import Link from "next/link";
+import { useI18n } from "@/src/lib/i18n";
 
 export function HomeExactNavbar() {
+  const { t } = useI18n();
   const session = useSyncExternalStore(subscribeToLocalAuthChanges, getCurrentLocalSession, () => null);
 
   const handleSignOut = () => {
@@ -25,23 +27,15 @@ export function HomeExactNavbar() {
                   className="nav-link text-white hover:main-color focus:text-blue-400 p-0"
                   href="/vacancy-academy"
                 >
-                  Абитуриентам в ВУЗы
+                  {t("nav.applicants")}
                 </Link>
               </li>
-              {/* <li className="nav-item p-2">
-                <a
-                  className="nav-link text-white hover:main-color focus:text-blue-400 p-0"
-                  href="#vacancies__pre"
-                >
-                  Бос лауазымдар
-                </a>
-              </li> */}
               <li className="nav-item p-2">
                 <Link
                   className="nav-link text-white hover:main-color focus:text-blue-400 p-0"
                   href="/my-applications"
                 >
-                  Менің өтініштерім
+                  {t("nav.myApplications")}
                 </Link>
               </li>
             </ul>
@@ -55,7 +49,7 @@ export function HomeExactNavbar() {
                       onClick={handleSignOut}
                       className="nav-link text-white hover:main-color focus:text-blue-400 p-0 ml-4 inline"
                     >
-                      Выйти
+                      {t("nav.signOut")}
                     </button>
                   </li>
                 </ul>
@@ -66,7 +60,7 @@ export function HomeExactNavbar() {
                       className="nav-link text-white hover:main-color focus:text-blue-400 p-0"
                       href="/sign-in"
                     >
-                      Кіру
+                      {t("nav.signIn")}
                     </a>
                   </li>
                 </ul>

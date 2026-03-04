@@ -1,11 +1,6 @@
-const steps = [
-  ["01", "Жұмыс орнын таңдаңыз"],
-  ["02", "Тіркеліңіз"],
-  ["03", "Қажетті құжаттарды толтырыңыз"],
-  ["04", "Қажетті құжаттарды тіркеңіз"],
-  ["05", "Өтініш қалдырыңыз"],
-  ["06", "Дене шынықтыру стандарттары"],
-] as const;
+"use client";
+
+import { useI18n } from "@/src/lib/i18n";
 
 function ArrowIcon() {
   return (
@@ -17,11 +12,21 @@ function ArrowIcon() {
 }
 
 export function HomeExactSteps() {
+  const { t } = useI18n();
+  const steps = [
+    ["01", t("home.steps.1")],
+    ["02", t("home.steps.2")],
+    ["03", t("home.steps.3")],
+    ["04", t("home.steps.4")],
+    ["05", t("home.steps.5")],
+    ["06", t("home.steps.6")],
+  ] as const;
+
   return (
     <section id="vacancies__pre" className="vacancies__pre pad-48">
       <div className="container">
         <div className="vacancies__pre__header section__header">
-          <h2 className="vacancies__pre__title text-h2">Онлайн өтініш беру оңай!</h2>
+          <h2 className="vacancies__pre__title text-h2">{t("home.steps.title")}</h2>
         </div>
         <div className="vacancies__pre__content">
           {steps.map(([n, text]) => (

@@ -6,10 +6,13 @@ import { HomeExactSupportButton } from "@/src/components/home/HomeExactSupportBu
 import { HomeExactNavbar } from "../home/HomeExactNav";
 import type { VacancyItem } from "@/src/lib/vacancyData";
 import { VACANCIES } from "@/src/lib/vacancyData";
+import { useI18n } from "@/src/lib/i18n";
 
 const ACADEMY_OPTIONS = Array.from(new Set(VACANCIES.map((item) => item.academy)));
 
 function VacancyCard({ item }: { item: VacancyItem }) {
+  const { t } = useI18n();
+
   return (
     <div
       className="grid shadow-lg my-5 w-full py-5 px-5 text-left rounded-2xl"
@@ -22,10 +25,10 @@ function VacancyCard({ item }: { item: VacancyItem }) {
         </span>
         <span className="sm:flex justify-start mb-4">
           <p className="montserrat text-sm light-gray-1 mr-5">
-            <b>Академия: {item.academy}</b>
+            <b>{t("vacancy.labelAcademy")} {item.academy}</b>
           </p>
           <p className="montserrat text-sm light-gray-1 mr-5">
-            <b>Специализация: {item.specialization}</b>
+            <b>{t("vacancy.labelSpecialization")} {item.specialization}</b>
           </p>
         </span>
         <hr className="border-gray-600" />
@@ -33,13 +36,13 @@ function VacancyCard({ item }: { item: VacancyItem }) {
       </div>
       <div className="flex justify-end">
         <a className="text-white main-blue-bg-opacity mx-3 text-sm px-8 py-2 rounded hover:bg-info cursor-pointer">
-          Подробнее
+          {t("vacancy.details")}
         </a>
         <Link
           className="text-white bg-red-600 text-sm px-8 py-2 rounded hover:bg-red-900 cursor-pointer"
           href={`/application/${item.id}`}
         >
-          Подать заявку
+          {t("vacancy.apply")}
         </Link>
       </div>
     </div>
@@ -47,6 +50,7 @@ function VacancyCard({ item }: { item: VacancyItem }) {
 }
 
 export function VacancyAcademy() {
+  const { t } = useI18n();
   const [selectedAcademy, setSelectedAcademy] = useState("");
   const [selectedSpecialization, setSelectedSpecialization] = useState("");
   const specializationOptions = useMemo(() => {
@@ -72,10 +76,10 @@ export function VacancyAcademy() {
       <main id="main" className="main">
         <div className="container pt-4 mx-auto h-auto text-left">
           <h1 className="light-gray-1 text-2xl px-2">
-            Вакансии для поступления в ВУЗы МВД
+            {t("vacancy.title")}
           </h1>
           <p className="text-gray-600 text-sm px-2 mt-2">
-            Всего вакансий: {filteredVacancies.length}
+            {t("vacancy.total")}: {filteredVacancies.length}
           </p>
         </div>
         <div className="container mx-auto h-auto text-center">
@@ -88,7 +92,7 @@ export function VacancyAcademy() {
                 <div className="grid grid-cols-1 gap-4">
                   <div className="col-span-1">
                     <select
-                      aria-label="Академия"
+                      aria-label={t("vacancy.academy")}
                       className="w-full border border-gray-300 rounded px-3 py-2 bg-white"
                       value={selectedAcademy}
                       onChange={(event) => {
@@ -96,7 +100,7 @@ export function VacancyAcademy() {
                         setSelectedSpecialization("");
                       }}
                     >
-                      <option value="">Академия</option>
+                      <option value="">{t("vacancy.academy")}</option>
                       {ACADEMY_OPTIONS.map((academy) => (
                         <option key={academy} value={academy}>
                           {academy}
@@ -106,14 +110,14 @@ export function VacancyAcademy() {
                   </div>
                   <div className="col-span-1">
                     <select
-                      aria-label="Специализация"
+                      aria-label={t("vacancy.specialization")}
                       className="w-full border border-gray-300 rounded px-3 py-2 bg-white"
                       value={selectedSpecialization}
                       onChange={(event) =>
                         setSelectedSpecialization(event.target.value)
                       }
                     >
-                      <option value="">Специализация</option>
+                      <option value="">{t("vacancy.specialization")}</option>
                       {specializationOptions.map((specialization) => (
                         <option key={specialization} value={specialization}>
                           {specialization}
@@ -131,7 +135,7 @@ export function VacancyAcademy() {
                 ))
               ) : (
                 <div className="text-left py-8 px-2 light-gray-1">
-                  По выбранным параметрам вакансий нет.
+                  {t("vacancy.empty")}
                 </div>
               )}
             </div>

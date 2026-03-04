@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 import { registerLocalUser } from "@/src/lib/auth/localAuth";
+import { useI18n } from "@/src/lib/i18n";
 
 type SignUpFormProps = {
   onSuccess?: (message: string) => void;
@@ -12,6 +13,7 @@ type SignUpFormProps = {
 const IIN_REGEX = /^\d{12}$/;
 
 export function SignUpForm({ onSuccess }: SignUpFormProps) {
+  const { t } = useI18n();
   const router = useRouter();
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
@@ -33,32 +35,32 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     setSuccessMessage(null);
 
     if (!IIN_REGEX.test(iin)) {
-      setError("ИИН должен состоять из 12 цифр.");
+      setError(t("auth.error.iin12"));
       return;
     }
 
     if (!name.trim() || !surname.trim()) {
-      setError("Заполните имя и фамилию.");
+      setError(t("auth.error.fillNameSurname"));
       return;
     }
 
     if (!birthDay) {
-      setError("Укажите дату рождения.");
+      setError(t("auth.error.birthDay"));
       return;
     }
 
     if (!gender) {
-      setError("Выберите пол.");
+      setError(t("auth.error.gender"));
       return;
     }
 
     if (!phone.trim()) {
-      setError("Укажите номер телефона.");
+      setError(t("auth.error.phone"));
       return;
     }
 
     if (!agreed) {
-      setError("Необходимо согласие на обработку персональных данных.");
+      setError(t("auth.error.consent"));
       return;
     }
 
@@ -78,12 +80,18 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     });
 
     if (!result.ok) {
-      setError(result.message);
+      if (result.message === "Пользователь с таким email уже существует.") {
+        setError(t("auth.error.emailExists"));
+      } else if (result.message === "Пользователь с таким ИИН уже существует.") {
+        setError(t("auth.error.iinExists"));
+      } else {
+        setError(result.message);
+      }
       setLoading(false);
       return;
     }
 
-    const message = "Аккаунт создан. Теперь войдите в систему.";
+    const message = t("auth.signUpSuccess");
 
     onSuccess?.(message);
     setSuccessMessage(message);
@@ -115,7 +123,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             value={iin}
             onChange={(event) => setIin(event.target.value.replace(/\D/g, ""))}
             className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
-            placeholder="ИИН"
+            placeholder={t("auth.iin")}
           />
         </div>
 
@@ -126,7 +134,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             value={name}
             onChange={(event) => setName(event.target.value)}
             className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
-            placeholder="Имя"
+            placeholder={t("auth.name")}
           />
         </div>
 
@@ -137,7 +145,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             value={surname}
             onChange={(event) => setSurname(event.target.value)}
             className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
-            placeholder="Фамилия"
+            placeholder={t("auth.surname")}
           />
         </div>
 
@@ -147,7 +155,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             value={patronymic}
             onChange={(event) => setPatronymic(event.target.value)}
             className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
-            placeholder="Отчество"
+            placeholder={t("auth.patronymic")}
           />
         </div>
 
@@ -169,10 +177,10 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
           >
             <option value="" disabled>
-              Пол
+              {t("auth.gender")}
             </option>
-            <option value="male">Мужской</option>
-            <option value="female">Женский</option>
+            <option value="male">{t("auth.genderMale")}</option>
+            <option value="female">{t("auth.genderFemale")}</option>
           </select>
         </div>
 
@@ -183,7 +191,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             value={phone}
             onChange={(event) => setPhone(event.target.value)}
             className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
-            placeholder="Телефон"
+            placeholder={t("auth.phone")}
           />
         </div>
 
@@ -197,7 +205,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             placeholder="Email"
           />
           <small>
-            Данный email будет использоваться для подтверждения аккаунта и сброса пароля.
+            {t("auth.emailHint")}
           </small>
         </div>
 
@@ -209,10 +217,10 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
-            placeholder="Пароль"
+            placeholder={t("auth.password")}
           />
           <small>
-            Минимальная длина пароля: 6 символов.
+            {t("auth.passwordMin6")}
           </small>
         </div>
 
@@ -224,7 +232,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
             onChange={(event) => setAgreed(event.target.checked)}
           />
           <label htmlFor="confirmation" className="ml-2 montserrat light-gray-1 cursor-pointer text-sm">
-            Я согласен на обработку персональных данных
+            {t("auth.agreePersonalData")}
           </label>
         </div>
 
@@ -232,12 +240,12 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
         {successMessage ? <p className="text-sm text-success-text">{successMessage}</p> : null}
 
         <button type="submit" disabled={loading} className="bg-gray-500 inline-block montserrat mt-5 px-8 py-3 rounded text-sm text-white">
-          {loading ? "Регистрация..." : "Регистрация"}
+          {loading ? t("auth.signUpLoading") : t("auth.signUp")}
         </button>
 
         <section className="auth-links w-full py-4">
           <Link href="/sign-in" className="text-gray-700 underline">
-            Уже есть аккаунт? Войти
+            {t("auth.hasAccount")}
           </Link>
         </section>
       </div>

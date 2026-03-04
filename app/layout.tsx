@@ -5,6 +5,7 @@ import "@/src/content/qyzmet-components.global.css";
 import "@/src/content/qyzmet-auth.global.css";
 import { HomeExactFooter } from "@/src/components/home/HomeExactFooter";
 import { HomeExactHeader } from "@/src/components/home/HomeExactHeader";
+import { I18nProvider } from "@/src/lib/i18n";
 
 const golosText = Golos_Text({
   variable: "--font-golos-text",
@@ -34,11 +35,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${golosText.variable} ${geistMono.variable} ${montserrat.variable} antialiased`}>
-        <div className="wrapper">
-          <HomeExactHeader />
-          {children}
-          <HomeExactFooter />
-        </div>
+        <I18nProvider>
+          <div className="wrapper">
+            <HomeExactHeader />
+            {children}
+            <HomeExactFooter />
+          </div>
+        </I18nProvider>
       </body>
     </html>
   );
