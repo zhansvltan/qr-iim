@@ -34,7 +34,6 @@ const EDUCATION_OPTIONS = [
 ];
 
 const APPLICATIONS_STORAGE_KEY = "qyzmet_applications";
-
 function RequiredMark() {
   return <span className="text-red-600 ml-1">*</span>;
 }
@@ -67,6 +66,8 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
   const [relativeStatus, setRelativeStatus] = useState("");
   const [relativeBirthYear, setRelativeBirthYear] = useState("");
   const [relativeIin, setRelativeIin] = useState("");
+  const [isRelativeModalOpen, setIsRelativeModalOpen] = useState(false);
+  const [relativeModalError, setRelativeModalError] = useState<string | null>(null);
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -82,7 +83,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
       !relativeBirthYear.trim() ||
       !relativeIin.trim()
     ) {
-      setError("Заполните все поля для родственника.");
+      setRelativeModalError("Заполните все поля для родственника.");
       return;
     }
 
@@ -100,7 +101,9 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
     setRelativeStatus("");
     setRelativeBirthYear("");
     setRelativeIin("");
+    setRelativeModalError(null);
     setError(null);
+    setIsRelativeModalOpen(false);
   };
 
   const removeRelative = (index: number) => {
@@ -224,13 +227,13 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           htmlFor="vacancyTitle"
                           className="comforta cursor-pointer"
                         >
-                          Вакансия
+                          Академия
                         </label>
                         <input
                           id="vacancyTitle"
                           type="text"
                           className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
-                          value={vacancy.title}
+                          value={vacancy.academy}
                           disabled
                         />
                       </div>
@@ -294,6 +297,24 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     <div className="flex flex-row gap-10">
                       <div className="form-group w-1/2 mt-2 mb-4 text-md md:text-lg">
                         <label
+                          htmlFor="specialization"
+                          className="comforta cursor-pointer"
+                        >
+                          Специальность
+                        </label>
+                        <input
+                          id="specialization"
+                          type="text"
+                          name="specialization"
+                          className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
+                          value={vacancy.specialization}
+                          disabled
+                        />
+                      </div>
+                    </div>
+                    <div className="flex flex-row gap-10">
+                      <div className="form-group w-1/2 mt-2 mb-4 text-md md:text-lg">
+                        <label
                           htmlFor="regionVacancy"
                           className="comforta cursor-pointer"
                         >
@@ -305,22 +326,6 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           name="region"
                           className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
                           value={vacancy.region}
-                          disabled
-                        />
-                      </div>
-                      <div className="form-group w-1/2 mt-2 mb-4 text-md md:text-lg">
-                        <label
-                          htmlFor="districtVacancy"
-                          className="comforta cursor-pointer"
-                        >
-                          Район вакансии
-                        </label>
-                        <input
-                          id="districtVacancy"
-                          type="text"
-                          name="district"
-                          className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
-                          value={vacancy.district}
                           disabled
                         />
                       </div>
@@ -377,7 +382,10 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                         </p>
                         <div className="md:flex">
                           <div className="md:w-full flex flex-col gap-2">
-                            <label htmlFor="diploma" className="cursor-pointer text-sm">
+                            <label
+                              htmlFor="diploma"
+                              className="cursor-pointer text-sm"
+                            >
                               Прикрепить
                             </label>
                             <input
@@ -429,7 +437,10 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                         </p>
                         <div className="md:flex">
                           <div className="md:w-full flex flex-col gap-2">
-                            <label htmlFor="officerTestCertificate" className="cursor-pointer text-sm">
+                            <label
+                              htmlFor="officerTestCertificate"
+                              className="cursor-pointer text-sm"
+                            >
                               Прикрепить
                             </label>
                             <input
@@ -475,10 +486,8 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     </label>
                     <select
                       className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
-                      value={isChildOfKilledOfficer}
-                      onChange={(event) =>
-                        setIsChildOfKilledOfficer(event.target.value)
-                      }
+                      value={isServedInPolice}
+                      onChange={(event) => setIsServedInPolice(event.target.value)}
                     >
                       <option value="">—</option>
                       <option value="Да">Да</option>
@@ -492,9 +501,9 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     </label>
                     <select
                       className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
-                      value={hasEntOver100}
+                      value={isChildOfKilledOfficer}
                       onChange={(event) =>
-                        setHasEntOver100(event.target.value)
+                        setIsChildOfKilledOfficer(event.target.value)
                       }
                     >
                       <option value="">—</option>
@@ -503,15 +512,14 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     </select>
 
                     <label className="comforta required cursor-pointer">
-                      Являетесь ли вы обладателем сертификата более 100 баллов на ЕНТ
+                      Являетесь ли вы обладателем сертификата более 100 баллов
+                      на ЕНТ
                       <RequiredMark />
                     </label>
                     <select
                       className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
-                      value={hasAltynBelgi}
-                      onChange={(event) =>
-                        setHasAltynBelgi(event.target.value)
-                      }
+                      value={hasEntOver100}
+                      onChange={(event) => setHasEntOver100(event.target.value)}
                     >
                       <option value="">—</option>
                       <option value="Да">Да</option>
@@ -524,10 +532,8 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     </label>
                     <select
                       className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
-                      value={isServedInPolice}
-                      onChange={(event) =>
-                        setIsServedInPolice(event.target.value)
-                      }
+                      value={hasAltynBelgi}
+                      onChange={(event) => setHasAltynBelgi(event.target.value)}
                     >
                       <option value="">—</option>
                       <option value="Да">Да</option>
@@ -621,52 +627,13 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     </table>
                   </div>
                   <div className="grid grid-cols-12 gap-3 mt-4">
-                    <div className="col-span-12 md:col-span-3">
-                      <input
-                        type="text"
-                        placeholder="ФИО"
-                        className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
-                        value={relativeFullName}
-                        onChange={(event) =>
-                          setRelativeFullName(event.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="col-span-12 md:col-span-3">
-                      <input
-                        type="text"
-                        placeholder="Статус"
-                        className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
-                        value={relativeStatus}
-                        onChange={(event) =>
-                          setRelativeStatus(event.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="col-span-12 md:col-span-3">
-                      <input
-                        type="text"
-                        placeholder="Год рождения"
-                        className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
-                        value={relativeBirthYear}
-                        onChange={(event) =>
-                          setRelativeBirthYear(event.target.value)
-                        }
-                      />
-                    </div>
-                    <div className="col-span-12 md:col-span-2">
-                      <input
-                        type="text"
-                        placeholder="ИИН"
-                        className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
-                        value={relativeIin}
-                        onChange={(event) => setRelativeIin(event.target.value)}
-                      />
-                    </div>
                     <div className="col-span-12 md:col-span-1 text-left my-4">
                       <button
                         type="button"
-                        onClick={addRelative}
+                        onClick={() => {
+                          setRelativeModalError(null);
+                          setIsRelativeModalOpen(true);
+                        }}
                         className="rounded-full w-8 h-8 bg-transparent border-2 border-black"
                       >
                         +
@@ -694,6 +661,97 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
           </div>
         </section>
       </main>
+      {isRelativeModalOpen ? (
+        <div className="fixed top-0 left-0 w-full h-2/3 outline-none overflow-x-hidden overflow-y-auto z-50 bg-black/50">
+          <div className="modal-dialog relative w-full pointer-events-none my-0">
+            <div className="modal-content border-none shadow-lg relative flex flex-col w-full pointer-events-auto bg-white bg-clip-padding rounded-none outline-none text-current min-h-screen">
+              <div className="modal-header flex flex-shrink-0 items-center justify-between p-4 border-b border-gray-200 rounded-t-md">
+                <h5 id="surveyRelativesExample" className="text-xl font-medium leading-normal text-gray-800"></h5>
+                <button
+                  type="button"
+                  aria-label="Close"
+                  className="btn-close box-content w-4 h-4 p-1 text-black border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-black hover:opacity-75 hover:no-underline"
+                  onClick={() => setIsRelativeModalOpen(false)}
+                >
+                  ×
+                </button>
+              </div>
+              <div className="modal-body relative p-4 w-full">
+                <div className="form-group my-4 text-md md:text-lg">
+                  <label htmlFor="fio" className="comforta cursor-pointer">
+                    ФИО
+                  </label>
+                  <input
+                    id="fio"
+                    type="text"
+                    className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
+                    value={relativeFullName}
+                    onChange={(event) => setRelativeFullName(event.target.value)}
+                  />
+                </div>
+                <div className="form-group my-4 text-md md:text-lg">
+                  <label htmlFor="relativeStatus" className="comforta cursor-pointer">
+                    Статус
+                  </label>
+                  <input
+                    id="relativeStatus"
+                    type="text"
+                    className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
+                    value={relativeStatus}
+                    onChange={(event) => setRelativeStatus(event.target.value)}
+                  />
+                </div>
+                <div className="form-group my-4 text-md md:text-lg">
+                  <label htmlFor="relativeBirthday" className="comforta cursor-pointer">
+                    Год рождения
+                  </label>
+                  <input
+                    id="relativeBirthday"
+                    placeholder="дд.мм.гггг"
+                    type="text"
+                    className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
+                    value={relativeBirthYear}
+                    onChange={(event) => setRelativeBirthYear(event.target.value)}
+                  />
+                </div>
+                <div className="form-group my-4 text-md md:text-lg">
+                  <label htmlFor="relativeIIN" className="comforta cursor-pointer">
+                    ИИН
+                  </label>
+                  <input
+                    id="relativeIIN"
+                    type="text"
+                    inputMode="numeric"
+                    maxLength={12}
+                    className="my-1 block px-4 py-1 w-full rounded border-black border-solid border"
+                    value={relativeIin}
+                    onChange={(event) =>
+                      setRelativeIin(event.target.value.replace(/\D/g, "").slice(0, 12))
+                    }
+                  />
+                </div>
+                {relativeModalError ? <span className="text-red-500 my">{relativeModalError}</span> : null}
+              </div>
+              <div className="modal-footer flex flex-shrink-0 flex-wrap items-center justify-end p-4 border-t border-gray-200 rounded-b-md">
+                <button
+                  type="button"
+                  className="text-white main-blue-bg mt-5 text-sm px-8 py-3 mr-3 rounded hover:bg-blue-700 shadow-md"
+                  onClick={addRelative}
+                >
+                  Сохранить
+                </button>
+                <button
+                  type="button"
+                  className="text-white bg-red-600 mt-5 text-sm px-8 py-3 ml-3 rounded hover:bg-red-900 shadow-md"
+                  onClick={() => setIsRelativeModalOpen(false)}
+                >
+                  Отменить
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
       <HomeExactSupportButton />
     </>
   );

@@ -285,7 +285,7 @@ input:not(:-webkit-autofill), select:not(:-webkit-autofill), textarea:not(:-webk
   100% { opacity: 1; }
 }
 
-.modal-content { background: rgb(255, 255, 255); border-radius: 12px; padding: 32px; max-width: 400px; width: 90%; position: relative; box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 30px; animation: 0.3s ease 0s 1 normal none running _ngcontent-ng-c2709449135_slideUp; }
+.modal-content { background: rgb(255, 255, 255); border-radius: 12px; padding: 32px ; width: 100%; position: relative; box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 30px; animation: 0.3s ease 0s 1 normal none running _ngcontent-ng-c2709449135_slideUp; }
 
 @keyframes _ngcontent-ng-c2709449135_slideUp {
   0% { transform: translateY(20px); opacity: 0; }
@@ -2279,7 +2279,7 @@ input:not(:-webkit-autofill), select:not(:-webkit-autofill), textarea:not(:-webk
   100% { opacity: 1; }
 }
 
-.modal-content { background: rgb(255, 255, 255); border-radius: 12px; padding: 32px; max-width: 400px; width: 90%; position: relative; box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 30px; animation: 0.3s ease 0s 1 normal none running _ngcontent-ng-c2709449135_slideUp; }
+.modal-content { background: rgb(255, 255, 255); border-radius: 12px; padding: 32px;  width: 100%; position: relative; box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 30px; animation: 0.3s ease 0s 1 normal none running _ngcontent-ng-c2709449135_slideUp; }
 
 @keyframes _ngcontent-ng-c2709449135_slideUp {
   0% { transform: translateY(20px); opacity: 0; }
