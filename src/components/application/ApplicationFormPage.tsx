@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useMemo, useState, useSyncExternalStore } from "react";
+import { FormEvent, useEffect, useMemo, useState, useSyncExternalStore } from "react";
 import { HomeExactSupportButton } from "@/src/components/home/HomeExactSupportButton";
 import {
   getCurrentLocalSession,
@@ -71,6 +71,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   const fullName = [user?.surname, user?.name, user?.patronymic]
     .filter(Boolean)
@@ -111,6 +112,12 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
       prev.filter((_, currentIndex) => currentIndex !== index),
     );
   };
+
+  useEffect(() => {
+    if (!showSuccessToast) return;
+    const timeout = window.setTimeout(() => setShowSuccessToast(false), 3000);
+    return () => window.clearTimeout(timeout);
+  }, [showSuccessToast]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -180,6 +187,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
     window.localStorage.setItem(APPLICATIONS_STORAGE_KEY, JSON.stringify(next));
 
     setSuccess("Заявка успешно сохранена.");
+    setShowSuccessToast(true);
   };
 
   if (!vacancy) {
@@ -209,7 +217,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
         <section>
           <div className="container mx-auto h-auto py-4 text-left">
             <h1 className="light-gray-1 text-2xl px-2">
-              Подача заявки на Академию в органы внутренних дел
+              Подача заявки на обучение в ВУЗ-ах МВД
             </h1>
             <form onSubmit={handleSubmit} noValidate>
               <div
@@ -750,6 +758,11 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
               </div>
             </div>
           </div>
+        </div>
+      ) : null}
+      {showSuccessToast ? (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] rounded bg-green-600 text-white px-5 py-3 shadow-lg">
+          Заявление подано успешно
         </div>
       ) : null}
       <HomeExactSupportButton />

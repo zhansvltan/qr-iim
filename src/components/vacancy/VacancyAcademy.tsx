@@ -7,22 +7,7 @@ import { HomeExactNavbar } from "../home/HomeExactNav";
 import type { VacancyItem } from "@/src/lib/vacancyData";
 import { VACANCIES } from "@/src/lib/vacancyData";
 
-const ACADEMY_OPTIONS = [
-  "Алматинская академия",
-  "Актюбинский юридический институт",
-  "Карагандинская академия",
-  "Костанайская академия",
-];
-
-const SPECIALIZATION_OPTIONS = [
-  "Оперативно-розыскная деятельность ОВД",
-  "Досудебное расследование в ОВД",
-  "Административно-правовая деятельность ОВД",
-  "Оперативно-криминалистическая деятельность ОВД",
-  "Уголовно-исполнительная деятельность ОВД",
-  "Оперативно-розыскная деятельность по противодействию киберпреступности",
-  "IT-криминалистическое обеспечение деятельности ОВД (цифровая криминалистика)",
-];
+const ACADEMY_OPTIONS = Array.from(new Set(VACANCIES.map((item) => item.academy)));
 
 function VacancyCard({ item }: { item: VacancyItem }) {
   return (
@@ -64,12 +49,16 @@ function VacancyCard({ item }: { item: VacancyItem }) {
 export function VacancyAcademy() {
   const [selectedAcademy, setSelectedAcademy] = useState("");
   const [selectedSpecialization, setSelectedSpecialization] = useState("");
+  const specializationOptions = useMemo(() => {
+    const source = selectedAcademy
+      ? VACANCIES.filter((item) => item.academy === selectedAcademy)
+      : VACANCIES;
+    return Array.from(new Set(source.map((item) => item.specialization)));
+  }, [selectedAcademy]);
 
   const filteredVacancies = useMemo(() => {
     return VACANCIES.filter((item) => {
-      const academyMatched = selectedAcademy
-        ? item.academy.includes(selectedAcademy)
-        : true;
+      const academyMatched = selectedAcademy ? item.academy === selectedAcademy : true;
       const specializationMatched = selectedSpecialization
         ? item.specialization === selectedSpecialization
         : true;
@@ -102,9 +91,10 @@ export function VacancyAcademy() {
                       aria-label="Академия"
                       className="w-full border border-gray-300 rounded px-3 py-2 bg-white"
                       value={selectedAcademy}
-                      onChange={(event) =>
-                        setSelectedAcademy(event.target.value)
-                      }
+                      onChange={(event) => {
+                        setSelectedAcademy(event.target.value);
+                        setSelectedSpecialization("");
+                      }}
                     >
                       <option value="">Академия</option>
                       {ACADEMY_OPTIONS.map((academy) => (
@@ -124,7 +114,7 @@ export function VacancyAcademy() {
                       }
                     >
                       <option value="">Специализация</option>
-                      {SPECIALIZATION_OPTIONS.map((specialization) => (
+                      {specializationOptions.map((specialization) => (
                         <option key={specialization} value={specialization}>
                           {specialization}
                         </option>
@@ -137,7 +127,7 @@ export function VacancyAcademy() {
             <div className="col-span-12 sm:col-span-8 md:col-span-8">
               {filteredVacancies.length > 0 ? (
                 filteredVacancies.map((item) => (
-                  <VacancyCard key={item.title} item={item} />
+                  <VacancyCard key={item.id} item={item} />
                 ))
               ) : (
                 <div className="text-left py-8 px-2 light-gray-1">
