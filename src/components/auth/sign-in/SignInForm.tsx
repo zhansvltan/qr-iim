@@ -100,7 +100,7 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
           {error ? <p className="text-sm text-error-text">{error}</p> : null}
           {successMessage ? <p className="text-sm text-success-text">{successMessage}</p> : null}
 
-          <button type="submit" disabled={loading} className="auth-submit bg-gray-500 inline-block montserrat mt-5 px-8 py-3 rounded text-sm text-white">
+          <button type="submit" disabled={loading} className="bg-gray-500 inline-block montserrat mt-5 px-8 py-3 rounded text-sm text-white">
             {loading ? "Вход..." : "Войти"}
           </button>
         </div>
