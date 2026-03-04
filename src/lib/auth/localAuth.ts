@@ -24,6 +24,9 @@ const SESSION_KEY = "qyzmet_session";
 const AUTH_CHANGED_EVENT = "qyzmet_auth_changed";
 let cachedSessionRaw: string | null | undefined;
 let cachedSessionSnapshot: LocalSession | null = null;
+let cachedUserSessionRaw: string | null | undefined;
+let cachedUsersRaw: string | null | undefined;
+let cachedUserSnapshot: LocalUser | null = null;
 
 function notifyAuthChanged() {
   if (typeof window === "undefined") return;
@@ -138,6 +141,38 @@ export function getCurrentLocalSession(): LocalSession | null {
     cachedSessionSnapshot = null;
     return null;
   }
+}
+
+export function getCurrentLocalUser(): LocalUser | null {
+  if (typeof window === "undefined") return null;
+
+  const sessionRaw = window.localStorage.getItem(SESSION_KEY);
+  const usersRaw = window.localStorage.getItem(USERS_KEY);
+
+  if (sessionRaw === cachedUserSessionRaw && usersRaw === cachedUsersRaw) {
+    return cachedUserSnapshot;
+  }
+
+  cachedUserSessionRaw = sessionRaw;
+  cachedUsersRaw = usersRaw;
+
+  const session = getCurrentLocalSession();
+  if (!session) {
+    cachedUserSnapshot = null;
+    return null;
+  }
+
+  const users = readUsers();
+
+  const byIin = users.find((item) => Number((item as { iin: string | number }).iin) === session.iin);
+  if (byIin) {
+    cachedUserSnapshot = byIin;
+    return cachedUserSnapshot;
+  }
+
+  const normalizedEmail = normalizeEmail(session.email);
+  cachedUserSnapshot = users.find((item) => normalizeEmail(item.email) === normalizedEmail) ?? null;
+  return cachedUserSnapshot;
 }
 
 export function signOutLocalUser() {

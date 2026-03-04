@@ -1,46 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useSyncExternalStore } from "react";
-import {
-  getCurrentLocalSession,
-  signOutLocalUser,
-  subscribeToLocalAuthChanges,
-} from "@/src/lib/auth/localAuth";
+import { useMemo, useState } from "react";
 import { HomeExactSupportButton } from "@/src/components/home/HomeExactSupportButton";
 import { HomeExactNavbar } from "../home/HomeExactNav";
-
-type VacancyItem = {
-  title: string;
-  academy: string;
-  specialization: string;
-  description: string;
-  date: string;
-};
-
-const VACANCIES: VacancyItem[] = [
-  {
-    title: "Поступление в Алматинскую академию МВД",
-    academy: "Алматинская академия МВД",
-    specialization: "Оперативно-розыскная деятельность ОВД",
-    description: "Подготовка специалистов оперативно-розыскной деятельности.",
-    date: "04.03.2026",
-  },
-  {
-    title: "Поступление в Карагандинскую академию МВД",
-    academy: "Карагандинская академия МВД",
-    specialization: "IT-криминалистика (цифровая криминалистика)",
-    description: "Подготовка специалистов цифровой криминалистики.",
-    date: "04.03.2026",
-  },
-  {
-    title: "Поступление в Костанайскую академию МВД",
-    academy: "Костанайская академия МВД",
-    specialization: "Досудебное расследование в ОВД",
-    description: "Подготовка специалистов досудебного расследования.",
-    date: "04.03.2026",
-  },
-];
+import type { VacancyItem } from "@/src/lib/vacancyData";
+import { VACANCIES } from "@/src/lib/vacancyData";
 
 const ACADEMY_OPTIONS = [
   "Алматинская академия",
@@ -87,7 +52,7 @@ function VacancyCard({ item }: { item: VacancyItem }) {
         </a>
         <Link
           className="text-white bg-red-600 text-sm px-8 py-2 rounded hover:bg-red-900 cursor-pointer"
-          href="/"
+          href={`/application/${item.id}`}
         >
           Подать заявку
         </Link>
