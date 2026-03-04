@@ -16,7 +16,7 @@
   "footer.myApplications": "Мои заявки",
   "footer.copyright": "Copyright © 2024 | All Rights Reserved",
 
-  "home.hero.title": "Добро пожаловать на платформу по приему в органы внутренних дел!",
+  "home.hero.title": "Добро пожаловать на платформу по приему в органы внутренних дел и в ВУЗы Министерства внутренних дел!",
   "home.hero.subtitle": "Станьте частью команды стражей порядка!",
   "home.hero.apply": "Подать заявку",
   "home.steps.title": "Подать онлайн-заявку легко!",
@@ -94,13 +94,13 @@
   "auth.error.iinExists": "Пользователь с таким ИИН уже существует.",
   "auth.error.invalidCredentials": "Неверный ИИН или пароль.",
 
-  "vacancy.title": "Вакансии для поступления в ВУЗы МВД",
-  "vacancy.total": "Всего вакансий",
+  "vacancy.title": "Места для поступления в ВУЗы МВД",
+  "vacancy.total": "Всего мест",
   "vacancy.academy": "Академия",
   "vacancy.specialization": "Специализация",
   "vacancy.details": "Подробнее",
   "vacancy.apply": "Подать заявку",
-  "vacancy.empty": "По выбранным параметрам вакансий нет.",
+  "vacancy.empty": "По выбранным параметрам мест нет.",
   "vacancy.labelAcademy": "Академия:",
   "vacancy.labelSpecialization": "Специализация:",
 
