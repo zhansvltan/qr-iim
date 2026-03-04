@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export function HomeExactFooter() {
   return (
     <footer id="footer" className="footer">
@@ -6,11 +8,13 @@ export function HomeExactFooter() {
           <div className="footer__top">
             <div className="footer__left">
               <div className="footer__left--top">
-                <img
-                  src="/logo.png"
-                  alt="Министерство Внутренних Дел Республики Казахстан"
-                  className="footer__logo-image"
-                />
+                <Link href='/'>
+                  <img
+                    src="/logo.png"
+                    alt="Министерство Внутренних Дел Республики Казахстан"
+                    className="footer__logo-image"
+                  />
+                </Link>
                 <h4 className="footer__title">
                   Қазақстан Республикасының
                   <br />
@@ -38,7 +42,9 @@ export function HomeExactFooter() {
             </div>
           </div>
           <div className="footer__bottom">
-            <p className="footer__copyright">Copyright © 2024 | All Rights Reserved</p>
+            <p className="footer__copyright">
+              Copyright © 2024 | All Rights Reserved
+            </p>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import { HomeExactSupportButton } from "@/src/components/home/HomeExactSupportButton";
 import { type ApplicationRecord, formatDate, mapStoredApplication, MOCK_APPLICATIONS } from "@/src/lib/myApplicationsData";
 import { UserAreaNav } from "./UserAreaNav";
+import { HomeExactNavbar } from "../home/HomeExactNav";
 
 const APPLICATIONS_STORAGE_KEY = "qyzmet_applications";
 
@@ -50,7 +51,7 @@ export function MyApplicationsPage() {
 
   return (
     <>
-      <UserAreaNav />
+      <HomeExactNavbar/>
       <main id="main" className="main">
         <div className="container mx-auto h-auto mt-2 py-2 text-center">
           <h1 className="light-gray-1 text-2xl capitalize px-2">Мои заявки</h1>

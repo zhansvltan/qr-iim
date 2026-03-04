@@ -6,11 +6,12 @@ import { HomeExactSupportButton } from "@/src/components/home/HomeExactSupportBu
 import {
   APPLICATION_STAGES,
   type ApplicationRecord,
-  formatDateTime,
+  formatDate,
   mapStoredApplication,
   MOCK_APPLICATIONS,
 } from "@/src/lib/myApplicationsData";
 import { UserAreaNav } from "./UserAreaNav";
+import { HomeExactNavbar } from "../home/HomeExactNav";
 
 const APPLICATIONS_STORAGE_KEY = "qyzmet_applications";
 
@@ -25,8 +26,12 @@ function getStatusClass(status: string) {
   return "text-green-500";
 }
 
-export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) {
-  const [storedApplications, setStoredApplications] = useState<ApplicationRecord[]>([]);
+export function MyApplicationDetailsPage({
+  id,
+}: MyApplicationDetailsPageProps) {
+  const [storedApplications, setStoredApplications] = useState<
+    ApplicationRecord[]
+  >([]);
 
   useEffect(() => {
     const load = () => {
@@ -41,7 +46,9 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
           setStoredApplications([]);
           return;
         }
-        const mapped = parsed.map(mapStoredApplication).filter((item): item is ApplicationRecord => item !== null);
+        const mapped = parsed
+          .map(mapStoredApplication)
+          .filter((item): item is ApplicationRecord => item !== null);
         setStoredApplications(mapped);
       } catch {
         setStoredApplications([]);
@@ -60,11 +67,16 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
 
   const currentStageIndex = useMemo(() => {
     if (!application) return -1;
-    const current = APPLICATION_STAGES.findIndex((stage) => stage === application.stage);
+    const current = APPLICATION_STAGES.findIndex(
+      (stage) => stage === application.stage,
+    );
     if (current >= 0) return current;
-    const latestHistoryStage = application.history[application.history.length - 1]?.stage;
+    const latestHistoryStage =
+      application.history[application.history.length - 1]?.stage;
     if (!latestHistoryStage) return -1;
-    return APPLICATION_STAGES.findIndex((stage) => stage === latestHistoryStage);
+    return APPLICATION_STAGES.findIndex(
+      (stage) => stage === latestHistoryStage,
+    );
   }, [application]);
 
   const stageDates = useMemo(() => {
@@ -72,7 +84,7 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
     const map = new Map<string, string>();
     for (const item of application.history) {
       if (!map.has(item.stage)) {
-        map.set(item.stage, formatDateTime(item.date));
+        map.set(item.stage, formatDate(item.date));
       }
     }
     return map;
@@ -81,11 +93,14 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
   if (!application) {
     return (
       <>
-        <UserAreaNav />
+        <HomeExactNavbar />
         <main id="main" className="main">
           <div className="container mx-auto py-8">
             <h1 className="light-gray-1 text-2xl px-2">Заявка не найдена</h1>
-            <Link href="/my-applications" className="inline-block mt-4 text-white bg-red-600 text-sm px-8 py-3 rounded hover:bg-red-900">
+            <Link
+              href="/my-applications"
+              className="inline-block mt-4 text-white bg-red-600 text-sm px-8 py-3 rounded hover:bg-red-900"
+            >
               Вернуться к списку заявок
             </Link>
           </div>
@@ -99,7 +114,7 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
 
   return (
     <>
-      <UserAreaNav />
+      <HomeExactNavbar />
       <main id="main" className="main">
         <div className="container mx-auto h-auto pt-2 pb-2 text-center">
           <h1 className="montserrat-bolder font-bold light-gray-1 text-2xl capitalize px-2">
@@ -109,7 +124,10 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
 
           <section>
             <span className="inline-block py-4">
-              <Link className="montserrat-bolder light-blue my-4 text-md px-2 underline" href={`/my-applications/${application.id}`}>
+              <Link
+                className="montserrat-bolder light-blue my-4 text-md px-2 underline"
+                href={`/my-applications/${application.id}`}
+              >
                 Просмотр
               </Link>
             </span>
@@ -120,9 +138,17 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
                   {APPLICATION_STAGES.map((stage, index) => {
                     const passed = index < currentStageIndex;
                     const current = index === currentStageIndex;
-                    const stateClass = passed || (current && !isRejected) ? "my-arrow-success" : current && isRejected ? "my-arrow-fail" : "my-arrow";
+                    const stateClass =
+                      passed || (current && !isRejected)
+                        ? "my-arrow-success"
+                        : current && isRejected
+                          ? "my-arrow-fail"
+                          : "my-arrow";
                     return (
-                      <li key={stage} className={`md:w-1/5 ${stateClass} sm:w-1/2 w-11/12`}>
+                      <li
+                        key={stage}
+                        className={`md:w-1/5 ${stateClass} sm:w-1/2 w-11/12`}
+                      >
                         <a>{stage}</a>
                       </li>
                     );
@@ -136,10 +162,18 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
                     const passed = index < currentStageIndex;
                     const current = index === currentStageIndex;
                     const date = stageDates.get(stage) ?? "";
-                    const stateClass = passed || (current && !isRejected) ? "step-item-success" : current && isRejected ? "step-item-fail" : "";
+                    const stateClass =
+                      passed || (current && !isRejected)
+                        ? "step-item-success"
+                        : current && isRejected
+                          ? "step-item-fail"
+                          : "";
                     const visible = passed || current;
                     return (
-                      <li key={`step-${stage}`} className={`${visible ? "" : "invisible "}step-item ${stateClass}`.trim()}>
+                      <li
+                        key={`step-${stage}`}
+                        className={`${visible ? "" : "invisible "}step-item ${stateClass}`.trim()}
+                      >
                         <a className="text-white">{date}</a>
                       </li>
                     );
@@ -149,7 +183,10 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
 
               <div className="col-span-12 rounded-sm my-5 comfortaa">
                 <div className="text-right mt-4">
-                  <button type="button" className="inline-block text-center w-64 text-white bg-emerald-600 mt-2 text-sm px-8 py-3 rounded hover:bg-emerald-700">
+                  <button
+                    type="button"
+                    className="inline-block text-center w-64 text-white bg-emerald-600 mt-2 text-sm px-8 py-3 rounded hover:bg-emerald-700"
+                  >
                     Скачать направление на ВВК
                   </button>
                 </div>
@@ -158,30 +195,87 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
                   <table className="min-w-full bg-gray-2">
                     <thead className="border-solid border-0 border-b border-black">
                       <tr className="text-center">
-                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Номер заявки</th>
-                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Дата</th>
-                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Этап</th>
-                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Статус</th>
-                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Комментарий</th>
-                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Детали</th>
+                        <th
+                          scope="col"
+                          className="text-md font-medium text-black px-6 py-4"
+                        >
+                          Номер заявки
+                        </th>
+                        <th
+                          scope="col"
+                          className="text-md font-medium text-black px-6 py-4"
+                        >
+                          Дата
+                        </th>
+                        <th
+                          scope="col"
+                          className="text-md font-medium text-black px-6 py-4"
+                        >
+                          Этап
+                        </th>
+                        <th
+                          scope="col"
+                          className="text-md font-medium text-black px-6 py-4"
+                        >
+                          Статус
+                        </th>
+                        <th
+                          scope="col"
+                          className="text-md font-medium text-black px-6 py-4"
+                        >
+                          Комментарий
+                        </th>
+                        <th
+                          scope="col"
+                          className="text-md font-medium text-black px-6 py-4"
+                        >
+                          Детали
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
                       {application.history.map((historyItem, index) => (
-                        <tr key={`${historyItem.stage}-${historyItem.date}-${index}`} className="comforta border-b transition duration-300 ease-in-out hover:bg-gray-2 text-center border-black">
+                        <tr
+                          key={`${historyItem.stage}-${historyItem.date}-${index}`}
+                          className="comforta border-b transition duration-300 ease-in-out hover:bg-gray-2 text-center border-black"
+                        >
                           <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                            <Link href={`/my-applications/${application.id}`}>Заявка № {Number(application.id).toLocaleString("ru-RU")}</Link>
+                            <Link href={`/my-applications/${application.id}`}>
+                              Заявка №{" "}
+                              {Number(application.id).toLocaleString("ru-RU")}
+                            </Link>
                           </td>
-                          <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">{formatDateTime(historyItem.date)}</td>
-                          <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">{historyItem.stage}</td>
-                          <td className="text-md text-gray-900 font-light px-6 py-4">
-                            <span className={getStatusClass(historyItem.status)}>{historyItem.status}</span>
+                          <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                            {formatDate(historyItem.date)}
+                          </td>
+                          <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                            {historyItem.stage}
                           </td>
                           <td className="text-md text-gray-900 font-light px-6 py-4">
-                            <span className={historyItem.comment.toLowerCase().includes("пройден") ? "text-green-500" : ""}>{historyItem.comment}</span>
+                            <span
+                              className={getStatusClass(historyItem.status)}
+                            >
+                              {historyItem.status}
+                            </span>
                           </td>
                           <td className="text-md text-gray-900 font-light px-6 py-4">
-                            <Link href={`/my-applications/${application.id}`} className="font-bold underline cursor-pointer text-gray-700">
+                            <span
+                              className={
+                                historyItem.comment
+                                  .toLowerCase()
+                                  .includes("пройден")
+                                  ? "text-green-500"
+                                  : ""
+                              }
+                            >
+                              {historyItem.comment}
+                            </span>
+                          </td>
+                          <td className="text-md text-gray-900 font-light px-6 py-4">
+                            <Link
+                              href={`/my-applications/${application.id}`}
+                              className="font-bold underline cursor-pointer text-gray-700"
+                            >
                               Просмотр
                             </Link>
                           </td>
@@ -193,7 +287,10 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
               </div>
 
               <div className="col-span-12 text-right">
-                <Link href="/my-applications" className="inline-block text-center w-52 text-white bg-red-600 mt-5 text-sm px-8 py-3 rounded hover:bg-red-900">
+                <Link
+                  href="/my-applications"
+                  className="inline-block text-center w-52 text-white bg-red-600 mt-5 text-sm px-8 py-3 rounded hover:bg-red-900"
+                >
                   Назад
                 </Link>
               </div>
