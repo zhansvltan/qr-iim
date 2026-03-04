@@ -41,7 +41,15 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
     onSuccess?.(message);
     setSuccessMessage(message);
     setLoading(false);
-    router.push(normalizedIin === "444444444444" ? "/vvk/applications" : "/");
+    if (normalizedIin === "222222222222") {
+      router.push("/exec/applications");
+      return;
+    }
+    if (normalizedIin === "444444444444") {
+      router.push("/vvk/applications");
+      return;
+    }
+    router.push("/");
   };
 
   return (
