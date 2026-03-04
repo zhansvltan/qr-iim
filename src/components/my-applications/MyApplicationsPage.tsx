@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { HomeExactSupportButton } from "@/src/components/home/HomeExactSupportButton";
-import { HomeExactNavbar } from "@/src/components/home/HomeExactNav";
 import { type ApplicationRecord, formatDate, mapStoredApplication, MOCK_APPLICATIONS } from "@/src/lib/myApplicationsData";
+import { UserAreaNav } from "./UserAreaNav";
 
 const APPLICATIONS_STORAGE_KEY = "qyzmet_applications";
 
 export function MyApplicationsPage() {
+  const router = useRouter();
   const [storedApplications, setStoredApplications] = useState<ApplicationRecord[]>([]);
 
   useEffect(() => {
@@ -48,14 +50,14 @@ export function MyApplicationsPage() {
 
   return (
     <>
-      <HomeExactNavbar />
+      <UserAreaNav />
       <main id="main" className="main">
         <div className="container mx-auto h-auto mt-2 py-2 text-center">
           <h1 className="light-gray-1 text-2xl capitalize px-2">Мои заявки</h1>
           <hr className="w-20 h-0.5 mx-auto" />
           <div className="col-span-12 px-4 py-2 mt-2">
             <div className="overflow-x-auto">
-              <table className="min-w-full">
+              <table className="min-w-full" style={{ borderCollapse: "separate", borderSpacing: "0 1em" }}>
                 <thead className="bg-gray-1">
                   <tr>
                     <th scope="col" className="text-md md:text-lg font-medium text-black px-6 py-2 text-center">
@@ -73,9 +75,6 @@ export function MyApplicationsPage() {
                     <th scope="col" className="text-md md:text-lg font-medium text-black px-6 py-2 text-center">
                       Комментарий
                     </th>
-                    <th scope="col" className="text-md md:text-lg font-medium text-black px-6 py-2 text-center">
-                      Просмотр
-                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -83,9 +82,20 @@ export function MyApplicationsPage() {
                     <tr
                       key={item.id}
                       className="cursor-pointer comforta tr-box-shadow my-4 shadow-lg bg-white border-b transition duration-300 ease-in-out hover:bg-gray-2"
+                      onClick={() => router.push(`/my-applications/${item.id}`)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          router.push(`/my-applications/${item.id}`);
+                        }
+                      }}
+                      role="link"
+                      tabIndex={0}
                     >
                       <td className="text-sm md:text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
-                        Заявка № {Number(item.id).toLocaleString("ru-RU")}
+                        <Link href={`/my-applications/${item.id}`}>
+                          Заявка № {Number(item.id).toLocaleString("ru-RU")}
+                        </Link>
                       </td>
                       <td className="text-sm md:text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">{formatDate(item.createdAt)}</td>
                       <td className="text-sm md:text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">{item.stage}</td>
@@ -93,11 +103,6 @@ export function MyApplicationsPage() {
                         <span className={item.status === "Заявка отклонена" ? "text-red-500" : "text-yellow-500"}>{item.status}</span>
                       </td>
                       <td className="text-sm md:text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center">{item.comment}</td>
-                      <td className="text-sm md:text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center">
-                        <Link href={`/my-applications/${item.id}`} className="font-bold underline cursor-pointer text-gray-700">
-                          Просмотр
-                        </Link>
-                      </td>
                     </tr>
                   ))}
                 </tbody>

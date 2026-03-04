@@ -6,18 +6,24 @@ import { HomeExactSupportButton } from "@/src/components/home/HomeExactSupportBu
 import {
   APPLICATION_STAGES,
   type ApplicationRecord,
-  formatDate,
   formatDateTime,
   mapStoredApplication,
   MOCK_APPLICATIONS,
 } from "@/src/lib/myApplicationsData";
-import { HomeExactNavbar } from "../home/HomeExactNav";
+import { UserAreaNav } from "./UserAreaNav";
 
 const APPLICATIONS_STORAGE_KEY = "qyzmet_applications";
 
 type MyApplicationDetailsPageProps = {
   id: string;
 };
+
+function getStatusClass(status: string) {
+  const normalized = status.toLowerCase();
+  if (normalized.includes("отклон")) return "text-red-500";
+  if (normalized.includes("работе")) return "text-yellow-500";
+  return "text-green-500";
+}
 
 export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) {
   const [storedApplications, setStoredApplications] = useState<ApplicationRecord[]>([]);
@@ -61,10 +67,21 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
     return APPLICATION_STAGES.findIndex((stage) => stage === latestHistoryStage);
   }, [application]);
 
+  const stageDates = useMemo(() => {
+    if (!application) return new Map<string, string>();
+    const map = new Map<string, string>();
+    for (const item of application.history) {
+      if (!map.has(item.stage)) {
+        map.set(item.stage, formatDateTime(item.date));
+      }
+    }
+    return map;
+  }, [application]);
+
   if (!application) {
     return (
       <>
-        <HomeExactNavbar />
+        <UserAreaNav />
         <main id="main" className="main">
           <div className="container mx-auto py-8">
             <h1 className="light-gray-1 text-2xl px-2">Заявка не найдена</h1>
@@ -78,90 +95,111 @@ export function MyApplicationDetailsPage({ id }: MyApplicationDetailsPageProps) 
     );
   }
 
+  const isRejected = application.status.toLowerCase().includes("отклон");
+
   return (
     <>
-      <HomeExactNavbar />
+      <UserAreaNav />
       <main id="main" className="main">
-        <section className="container mx-auto h-auto mt-2 py-2 text-left px-4">
-          <h1 className="light-gray-1 text-2xl capitalize">Заявка № {Number(application.id).toLocaleString("ru-RU")}</h1>
-          <div className="mt-2 text-sm text-gray-500">
-            <span>{formatDate(application.createdAt)}</span>
-            <span className="mx-2">|</span>
-            <Link href="/my-applications" className="underline">
-              Просмотр
-            </Link>
-          </div>
+        <div className="container mx-auto h-auto pt-2 pb-2 text-center">
+          <h1 className="montserrat-bolder font-bold light-gray-1 text-2xl capitalize px-2">
+            Заявка № {Number(application.id).toLocaleString("ru-RU")}
+          </h1>
+          <hr className="w-20 h-0.5 mx-auto" />
 
-          <div className="grid grid-cols-8 gap-2 mt-6">
-            {APPLICATION_STAGES.map((stage, index) => {
-              const isPassed = currentStageIndex >= index;
-              return (
-                <div key={stage} className="text-center">
-                  <div className={`h-2 rounded ${isPassed ? "bg-green-500" : "bg-gray-300"}`} />
-                  <p className="text-xs md:text-sm mt-2 light-gray-1">{stage}</p>
+          <section>
+            <span className="inline-block py-4">
+              <Link className="montserrat-bolder light-blue my-4 text-md px-2 underline" href={`/my-applications/${application.id}`}>
+                Просмотр
+              </Link>
+            </span>
+
+            <div className="grid grid-cols-12">
+              <div className="col-span-12 my-4">
+                <ul className="nav nav-wizard">
+                  {APPLICATION_STAGES.map((stage, index) => {
+                    const passed = index < currentStageIndex;
+                    const current = index === currentStageIndex;
+                    const stateClass = passed || (current && !isRejected) ? "my-arrow-success" : current && isRejected ? "my-arrow-fail" : "my-arrow";
+                    return (
+                      <li key={stage} className={`md:w-1/5 ${stateClass} sm:w-1/2 w-11/12`}>
+                        <a>{stage}</a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              <div className="col-span-12 my-4 overflow-x-auto">
+                <ul className="step flex md:flex-nowrap">
+                  {APPLICATION_STAGES.map((stage, index) => {
+                    const passed = index < currentStageIndex;
+                    const current = index === currentStageIndex;
+                    const date = stageDates.get(stage) ?? "";
+                    const stateClass = passed || (current && !isRejected) ? "step-item-success" : current && isRejected ? "step-item-fail" : "";
+                    const visible = passed || current;
+                    return (
+                      <li key={`step-${stage}`} className={`${visible ? "" : "invisible "}step-item ${stateClass}`.trim()}>
+                        <a className="text-white">{date}</a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+
+              <div className="col-span-12 rounded-sm my-5 comfortaa">
+                <div className="text-right mt-4">
+                  <button type="button" className="inline-block text-center w-64 text-white bg-emerald-600 mt-2 text-sm px-8 py-3 rounded hover:bg-emerald-700">
+                    Скачать направление на ВВК
+                  </button>
                 </div>
-              );
-            })}
-          </div>
 
-          <div className="grid shadow-lg my-5 w-full py-5 px-5 text-left rounded-2xl bg-white">
-            <span className="sm:flex justify-between mb-2">
-              <p className="montserrat text-2xl light-gray-1">{application.vacancyTitle}</p>
-              <p className="montserrat text-lg light-gray-1">{formatDate(application.createdAt)}</p>
-            </span>
-            <span className="sm:flex justify-start mb-4">
-              <p className="montserrat text-sm light-gray-1 mr-5">
-                <b>Академия: {application.academy}</b>
-              </p>
-              <p className="montserrat text-sm light-gray-1 mr-5">
-                <b>Специализация: {application.specialization}</b>
-              </p>
-            </span>
-            <hr className="border-gray-600" />
-            <p className="my-2 light-gray-1">
-              Текущий этап: <b>{application.stage}</b>
-            </p>
-          </div>
+                <div className="comforta overflow-x-auto">
+                  <table className="min-w-full bg-gray-2">
+                    <thead className="border-solid border-0 border-b border-black">
+                      <tr className="text-center">
+                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Номер заявки</th>
+                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Дата</th>
+                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Этап</th>
+                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Статус</th>
+                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Комментарий</th>
+                        <th scope="col" className="text-md font-medium text-black px-6 py-4">Детали</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {application.history.map((historyItem, index) => (
+                        <tr key={`${historyItem.stage}-${historyItem.date}-${index}`} className="comforta border-b transition duration-300 ease-in-out hover:bg-gray-2 text-center border-black">
+                          <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">
+                            <Link href={`/my-applications/${application.id}`}>Заявка № {Number(application.id).toLocaleString("ru-RU")}</Link>
+                          </td>
+                          <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">{formatDateTime(historyItem.date)}</td>
+                          <td className="text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap">{historyItem.stage}</td>
+                          <td className="text-md text-gray-900 font-light px-6 py-4">
+                            <span className={getStatusClass(historyItem.status)}>{historyItem.status}</span>
+                          </td>
+                          <td className="text-md text-gray-900 font-light px-6 py-4">
+                            <span className={historyItem.comment.toLowerCase().includes("пройден") ? "text-green-500" : ""}>{historyItem.comment}</span>
+                          </td>
+                          <td className="text-md text-gray-900 font-light px-6 py-4">
+                            <Link href={`/my-applications/${application.id}`} className="font-bold underline cursor-pointer text-gray-700">
+                              Просмотр
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
 
-          <div className="overflow-x-auto pb-8">
-            <table className="min-w-full">
-              <thead className="bg-gray-1">
-                <tr>
-                  <th scope="col" className="text-md md:text-lg font-medium text-black px-6 py-2 text-center">
-                    Дата
-                  </th>
-                  <th scope="col" className="text-md md:text-lg font-medium text-black px-6 py-2 text-center">
-                    Этап
-                  </th>
-                  <th scope="col" className="text-md md:text-lg font-medium text-black px-6 py-2 text-center">
-                    Статус
-                  </th>
-                  <th scope="col" className="text-md md:text-lg font-medium text-black px-6 py-2 text-center">
-                    Комментарий
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {application.history.map((historyItem, index) => (
-                  <tr key={`${historyItem.stage}-${historyItem.date}-${index}`} className="tr-box-shadow my-4 shadow-lg bg-white border-b">
-                    <td className="text-sm md:text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center">
-                      {formatDateTime(historyItem.date)}
-                    </td>
-                    <td className="text-sm md:text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center">
-                      {historyItem.stage}
-                    </td>
-                    <td className="text-sm md:text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center">
-                      {historyItem.status}
-                    </td>
-                    <td className="text-sm md:text-md text-gray-900 font-light px-6 py-4 whitespace-nowrap text-center">
-                      {historyItem.comment}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
+              <div className="col-span-12 text-right">
+                <Link href="/my-applications" className="inline-block text-center w-52 text-white bg-red-600 mt-5 text-sm px-8 py-3 rounded hover:bg-red-900">
+                  Назад
+                </Link>
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
       <HomeExactSupportButton />
     </>
