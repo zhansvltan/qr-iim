@@ -132,6 +132,7 @@
   "application.extraDocs": "Дополнительные документы",
   "application.eduDoc": "Документ об образовании с приложением(PDF)",
   "application.entDoc": "Результаты ЕНТ (PDF)",
+  "application.parentsConsentDoc": "Согласие родителей (PDF)",
   "application.attach": "Прикрепить",
   "application.servedContract": "Служили ли вы по контракту в НГ РК?",
   "application.servedPolice": "Служили ли вы ранее в органах полиции?",

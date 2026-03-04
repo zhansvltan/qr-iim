@@ -47,6 +47,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
   const [education, setEducation] = useState("");
   const [diplomaFileName, setDiplomaFileName] = useState("");
   const [testCertificateFileName, setTestCertificateFileName] = useState("");
+  const [parentsConsentFileName, setParentsConsentFileName] = useState("");
   const [isServedContractInNGRK, setIsServedContractInNGRK] = useState("");
   const [isServedInPolice, setIsServedInPolice] = useState("");
   const [isChildOfKilledOfficer, setIsChildOfKilledOfficer] = useState("");
@@ -185,6 +186,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
         education,
         diplomaFileName,
         testCertificateFileName,
+        parentsConsentFileName,
         isServedContractInNGRK,
         isServedInPolice,
         isChildOfKilledOfficer,
@@ -479,6 +481,39 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                             {testCertificateFileName ? (
                               <span className="text-sm">
                                 {testCertificateFileName}
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="form-group w-1/2 text-md md:text-lg py-4">
+                        <p className="comforta cursor-pointer">
+                          <label className="required">
+                            {t("application.parentsConsentDoc")}
+                          </label>
+                        </p>
+                        <div className="md:flex">
+                          <div className="md:w-full flex flex-col gap-2">
+                            <label
+                              htmlFor="parentsConsent"
+                              className="cursor-pointer text-sm"
+                            >
+                              {t("application.attach")}
+                            </label>
+                            <input
+                              id="parentsConsent"
+                              type="file"
+                              accept="application/pdf"
+                              className="hidden"
+                              onChange={(event) =>
+                                setParentsConsentFileName(
+                                  event.target.files?.[0]?.name ?? "",
+                                )
+                              }
+                            />
+                            {parentsConsentFileName ? (
+                              <span className="text-sm">
+                                {parentsConsentFileName}
                               </span>
                             ) : null}
                           </div>

@@ -4,13 +4,16 @@ import { useSyncExternalStore } from "react";
 import { getCurrentLocalSession, signOutLocalUser, subscribeToLocalAuthChanges } from "@/src/lib/auth/localAuth";
 import Link from "next/link";
 import { useI18n } from "@/src/lib/i18n";
+import { useRouter } from "next/navigation";
 
 export function HomeExactNavbar() {
+  const router = useRouter();
   const { t } = useI18n();
   const session = useSyncExternalStore(subscribeToLocalAuthChanges, getCurrentLocalSession, () => null);
 
   const handleSignOut = () => {
     signOutLocalUser();
+    router.push("/");
   };
 
   return (

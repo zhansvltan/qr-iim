@@ -138,6 +138,15 @@ export function MyApplicationDetailsPage({
     return value;
   };
 
+  const handleDownloadVvk = () => {
+    const link = document.createElement("a");
+    link.href = "/vvk.pdf";
+    link.download = "vvk.pdf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <>
       <HomeExactNavbar />
@@ -212,6 +221,7 @@ export function MyApplicationDetailsPage({
                   <button
                     type="button"
                     className="inline-block text-center w-64 text-white bg-emerald-600 mt-2 text-sm px-8 py-3 rounded hover:bg-emerald-700"
+                    onClick={handleDownloadVvk}
                   >
                     {t("applications.downloadVvk")}
                   </button>

@@ -132,6 +132,7 @@
   "application.extraDocs": "Қосымша құжаттар",
   "application.eduDoc": "Білім туралы құжат және қосымшасы (PDF)",
   "application.entDoc": "ҰБТ нәтижелері (PDF)",
+  "application.parentsConsentDoc": "Ата-ананың келісімі (PDF)",
   "application.attach": "Тіркеу",
   "application.servedContract": "ҚР ҰГ-да келісімшарт бойынша қызмет атқардыңыз ба?",
   "application.servedPolice": "Бұрын полиция органдарында қызмет атқардыңыз ба?",

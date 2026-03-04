@@ -15,6 +15,29 @@ export type ApplicationRecord = {
   academy: string;
   specialization: string;
   history: ApplicationHistoryItem[];
+  region?: string;
+  user?: {
+    fullName: string;
+    iin: string;
+    phone: string;
+    email: string;
+  };
+  form?: {
+    education: string;
+    isServedContractInNGRK: string;
+    isServedInPolice: string;
+    isChildOfKilledOfficer: string;
+    hasEntOver100: string;
+    hasAltynBelgi: string;
+    relatives: Array<{
+      fullName: string;
+      status: string;
+      birthYear: string;
+      iin: string;
+    }>;
+    diplomaFileName: string;
+    testCertificateFileName: string;
+  };
 };
 
 export type StoredApplicationLike = {
@@ -39,31 +62,62 @@ export const APPLICATION_STAGES = [
 export const MOCK_APPLICATIONS: ApplicationRecord[] = [
   {
     id: "3558",
-    createdAt: "2026-02-27T10:37:00.000Z",
-    stage: "Медобследование",
+    createdAt: "2026-03-04T10:37:00.000Z",
+    stage: "ФИЗО",
     status: "В работе",
     comment: "Срок обработки заявки до 5 рабочих дней",
     vacancyTitle: "Поступление в Алматинскую академию МВД имени М.Есболаева",
     academy: "Алматинская академия МВД имени М.Есболаева",
     specialization: "Оперативно-розыскная деятельность ОВД",
+    region: "г. Алматы",
+    user: {
+      fullName: "тест тест тест",
+      iin: "55555555555",
+      phone: "87777777777",
+      email: "erasyltores@gmail.com",
+    },
+    form: {
+      education: "Общее среднее (11 классов)",
+      isServedContractInNGRK: "Нет",
+      isServedInPolice: "Нет",
+      isChildOfKilledOfficer: "Нет",
+      hasEntOver100: "Нет",
+      hasAltynBelgi: "Нет",
+      relatives: [
+        {
+          fullName: "тест тест тест",
+          status: "Сестра",
+          birthYear: "12.12.2012",
+          iin: "121212121212",
+        },
+      ],
+      diplomaFileName: "edu.pdf",
+      testCertificateFileName: "ent.pdf",
+    },
     history: [
       {
-        date: "2026-02-27T10:37:00.000Z",
+        date: "2026-03-05T10:37:00.000Z",
         stage: "Документы отправлены",
         status: "Заявка принята",
         comment: "Этап пройден",
       },
       {
-        date: "2026-02-27T10:38:00.000Z",
+        date: "2026-03-05T10:38:00.000Z",
         stage: "Принято в работу",
         status: "Заявка принята",
         comment: "Этап пройден",
       },
       {
-        date: "2026-02-27T10:38:00.000Z",
+        date: "2026-03-05T11:20:00.000Z",
         stage: "Медобследование",
-        status: "Документы отправлены на медобследование",
-        comment: "Этап в работе",
+        status: "Заявка принята",
+        comment: "Этап пройден",
+      },
+      {
+        date: "2026-03-05T12:10:00.000Z",
+        stage: "ФИЗО",
+        status: "В работе",
+        comment: "Срок обработки заявки до 5 рабочих дней",
       },
     ],
   },
