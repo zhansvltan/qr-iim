@@ -28,14 +28,14 @@ export function HomeExactNavbar() {
                   Абитуриентам в ВУЗы
                 </Link>
               </li>
-              <li className="nav-item p-2">
+              {/* <li className="nav-item p-2">
                 <a
                   className="nav-link text-white hover:main-color focus:text-blue-400 p-0"
                   href="#vacancies__pre"
                 >
                   Бос лауазымдар
                 </a>
-              </li>
+              </li> */}
               <li className="nav-item p-2">
                 <a
                   className="nav-link text-white hover:main-color focus:text-blue-400 p-0"
