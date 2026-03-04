@@ -65,7 +65,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     setLoading(true);
 
     const result = registerLocalUser({
-      iin,
+      iin: Number(iin),
       name: name.trim(),
       surname: surname.trim(),
       patronymic: patronymic.trim(),

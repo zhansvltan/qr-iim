@@ -11,7 +11,7 @@ type SignInFormProps = {
 
 export function SignInForm({ onSuccess }: SignInFormProps) {
   const router = useRouter();
-  const [email, setEmail] = useState("");
+  const [iin, setIin] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
     setSuccessMessage(null);
     setLoading(true);
 
-    const result = signInLocalUser(email, password);
+    const result = signInLocalUser(iin, password);
     if (!result.ok) {
       setError(result.message);
       setLoading(false);
@@ -56,12 +56,15 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
         <div className="mx-auto mt-8 sm:w-full md:w-1/2 text-center px-4">
           <div className="form-group my-8">
             <input
-              type="email"
+              type="text"
               required
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              inputMode="numeric"
+              pattern="\\d{12}"
+              maxLength={12}
+              value={iin}
+              onChange={(event) => setIin(event.target.value.replace(/\D/g, ""))}
               className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
-              placeholder="Email"
+              placeholder="ИИН"
             />
           </div>
 

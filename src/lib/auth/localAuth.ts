@@ -1,5 +1,5 @@
 export type LocalUser = {
-  iin: string;
+  iin: number;
   name: string;
   surname: string;
   patronymic: string;
@@ -14,7 +14,7 @@ export type LocalUser = {
 
 export type LocalSession = {
   email: string;
-  iin: string;
+  iin: number;
   name: string;
   surname: string;
 };
@@ -62,7 +62,7 @@ export function registerLocalUser(user: Omit<LocalUser, "createdAt">): { ok: tru
     return { ok: false, message: "Пользователь с таким email уже существует." };
   }
 
-  const iinExists = users.some((item) => item.iin === user.iin);
+  const iinExists = users.some((item) => Number((item as { iin: string | number }).iin) === user.iin);
   if (iinExists) {
     return { ok: false, message: "Пользователь с таким ИИН уже существует." };
   }
@@ -77,13 +77,13 @@ export function registerLocalUser(user: Omit<LocalUser, "createdAt">): { ok: tru
   return { ok: true };
 }
 
-export function signInLocalUser(email: string, password: string): { ok: true } | { ok: false; message: string } {
+export function signInLocalUser(iin: string, password: string): { ok: true } | { ok: false; message: string } {
   const users = readUsers();
-  const normalizedEmail = normalizeEmail(email);
+  const normalizedIin = Number(iin.replace(/\D/g, "").trim());
 
-  const user = users.find((item) => normalizeEmail(item.email) === normalizedEmail && item.password === password);
+  const user = users.find((item) => Number((item as { iin: string | number }).iin) === normalizedIin && item.password === password);
   if (!user) {
-    return { ok: false, message: "Неверный email или пароль." };
+    return { ok: false, message: "Неверный ИИН или пароль." };
   }
 
   if (typeof window !== "undefined") {
@@ -119,14 +119,17 @@ export function getCurrentLocalSession(): LocalSession | null {
 
   try {
     const parsed = JSON.parse(raw) as Partial<LocalSession>;
-    if (!parsed.email || !parsed.name || !parsed.surname || !parsed.iin) {
+    const parsedIin =
+      typeof parsed.iin === "number" ? parsed.iin : typeof parsed.iin === "string" ? Number(parsed.iin) : NaN;
+
+    if (!parsed.email || !parsed.name || !parsed.surname || Number.isNaN(parsedIin)) {
       cachedSessionSnapshot = null;
       return null;
     }
 
     cachedSessionSnapshot = {
       email: parsed.email,
-      iin: parsed.iin,
+      iin: parsedIin,
       name: parsed.name,
       surname: parsed.surname,
     };
