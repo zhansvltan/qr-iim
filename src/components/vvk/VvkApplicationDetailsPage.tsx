@@ -57,7 +57,7 @@ export function VvkApplicationDetailsPage({ id }: VvkApplicationDetailsPageProps
     );
   }
 
-  if (loaded && !application) {
+  if (!application) {
     return (
       <>
         <VvkShell medCount={applications.length || 0}>
