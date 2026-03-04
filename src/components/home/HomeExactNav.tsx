@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { getCurrentLocalSession, signOutLocalUser, subscribeToLocalAuthChanges } from "@/src/lib/auth/localAuth";
+import Link from "next/link";
 
 export function HomeExactNavbar() {
   const session = useSyncExternalStore(subscribeToLocalAuthChanges, getCurrentLocalSession, () => null);
@@ -20,12 +21,12 @@ export function HomeExactNavbar() {
           >
             <ul className="navbar-nav md:flex pl-0 list-style-none mr-auto">
               <li className="nav-item p-2">
-                <a
+                <Link
                   className="nav-link text-white hover:main-color focus:text-blue-400 p-0"
-                  href="#"
+                  href="/vacancy-academy"
                 >
                   Абитуриентам в ВУЗы
-                </a>
+                </Link>
               </li>
               <li className="nav-item p-2">
                 <a
