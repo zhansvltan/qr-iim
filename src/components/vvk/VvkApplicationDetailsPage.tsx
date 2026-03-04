@@ -21,6 +21,7 @@ export function VvkApplicationDetailsPage({ id }: VvkApplicationDetailsPageProps
   const [attachComment, setAttachComment] = useState("");
   const [attachFile, setAttachFile] = useState("");
   const [selectedDossierFile, setSelectedDossierFile] = useState("");
+  const [showAcceptToast, setShowAcceptToast] = useState(false);
 
   useEffect(() => {
     const load = () => {
@@ -31,6 +32,12 @@ export function VvkApplicationDetailsPage({ id }: VvkApplicationDetailsPageProps
     window.addEventListener("storage", load);
     return () => window.removeEventListener("storage", load);
   }, []);
+
+  useEffect(() => {
+    if (!showAcceptToast) return;
+    const timeout = window.setTimeout(() => setShowAcceptToast(false), 3000);
+    return () => window.clearTimeout(timeout);
+  }, [showAcceptToast]);
 
   const application = useMemo(
     () => applications.find((item) => item.id === id) ?? null,
@@ -231,7 +238,11 @@ export function VvkApplicationDetailsPage({ id }: VvkApplicationDetailsPageProps
                 <Link href="/vvk/applications" className="w-80 text-center text-white bg-red-600 mt-5 text-sm px-8 py-3 rounded hover:bg-red-900 shadow-md">
                   Назад
                 </Link>
-                <button className="w-80 text-white main-blue-bg mt-5 text-sm px-8 py-3 rounded shadow-md opacity-50d">
+                <button
+                  type="button"
+                  className="w-80 text-white main-blue-bg mt-5 text-sm px-8 py-3 rounded shadow-md"
+                  onClick={() => setShowAcceptToast(true)}
+                >
                   Принять
                 </button>
               </div>
@@ -397,6 +408,11 @@ export function VvkApplicationDetailsPage({ id }: VvkApplicationDetailsPageProps
           </div>
         ) : null}
       </VvkShell>
+      {showAcceptToast ? (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] rounded bg-green-600 text-white px-5 py-3 shadow-lg">
+          Успешно
+        </div>
+      ) : null}
       <HomeExactSupportButton />
     </>
   );

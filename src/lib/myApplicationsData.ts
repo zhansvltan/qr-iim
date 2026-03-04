@@ -37,6 +37,7 @@ export type ApplicationRecord = {
     }>;
     diplomaFileName: string;
     testCertificateFileName: string;
+    parentsConsentFileName?: string;
   };
 };
 
@@ -93,6 +94,7 @@ export const MOCK_APPLICATIONS: ApplicationRecord[] = [
       ],
       diplomaFileName: "edu.pdf",
       testCertificateFileName: "ent.pdf",
+      parentsConsentFileName: "parents.pdf",
     },
     history: [
       {

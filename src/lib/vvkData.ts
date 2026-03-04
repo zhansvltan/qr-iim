@@ -112,7 +112,7 @@ function toVvkRecordFromApplication(item: ApplicationRecord): VvkApplicationReco
     education: item.form?.education ?? "",
     diplomaFileName: item.form?.diplomaFileName ?? "edu.pdf",
     testCertificateFileName: item.form?.testCertificateFileName ?? "ent.pdf",
-    parentsConsentFileName: "",
+    parentsConsentFileName: item.form?.parentsConsentFileName ?? "parents.pdf",
   };
 }
 
