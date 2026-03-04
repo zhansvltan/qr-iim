@@ -62,7 +62,7 @@ export const APPLICATION_STAGES = [
 export const MOCK_APPLICATIONS: ApplicationRecord[] = [
   {
     id: "3558",
-    createdAt: "2026-03-04T10:37:00.000Z",
+    createdAt: "2026-03-05T10:37:00.000Z",
     stage: "ФИЗО",
     status: "В работе",
     comment: "Срок обработки заявки до 5 рабочих дней",

@@ -25,7 +25,8 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
     setSuccessMessage(null);
     setLoading(true);
 
-    const result = signInLocalUser(iin, password);
+    const normalizedIin = iin.replace(/\D/g, "").slice(0, 12);
+    const result = signInLocalUser(normalizedIin, password);
     if (!result.ok) {
       if (result.message === "Неверный ИИН или пароль.") {
         setError(t("auth.error.invalidCredentials"));
@@ -40,7 +41,7 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
     onSuccess?.(message);
     setSuccessMessage(message);
     setLoading(false);
-    router.push("/");
+    router.push(normalizedIin === "444444444444" ? "/vvk/applications" : "/");
   };
 
   return (

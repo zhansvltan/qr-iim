@@ -46,3 +46,32 @@ body {
   background: var(--background);
   font-family: var(--font-sans), sans-serif;
 }
+
+.med-body {
+  background: #f5f5f7;
+}
+
+.light-blue-bg-2 {
+  background: #f3f7fb;
+}
+
+.bg-gray-4 {
+  background: #f3f4f6;
+}
+
+.even-table:nth-child(even) {
+  background: #fafafa;
+}
+
+.request-header {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.comforta-bold {
+  font-family: var(--font-golos-text), sans-serif;
+  font-weight: 700;
+}
+
+.success-color {
+  color: #22c55e;
+}
