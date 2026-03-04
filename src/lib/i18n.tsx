@@ -25,7 +25,7 @@ type I18nContextValue = {
 const I18nContext = createContext<I18nContextValue | null>(null);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
-  const locale = useSyncExternalStore(
+  const locale = useSyncExternalStore<Locale>(
     (onStoreChange) => {
       if (typeof window === "undefined") return () => undefined;
       const handler = () => onStoreChange();
