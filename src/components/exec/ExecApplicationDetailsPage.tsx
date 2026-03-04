@@ -18,6 +18,7 @@ export function ExecApplicationDetailsPage({ id }: ExecApplicationDetailsPagePro
   const [rejectReason, setRejectReason] = useState("");
   const [isRevisionModalOpen, setIsRevisionModalOpen] = useState(false);
   const [revisionText, setRevisionText] = useState("");
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
 
   useEffect(() => {
     const load = () => {
@@ -28,6 +29,12 @@ export function ExecApplicationDetailsPage({ id }: ExecApplicationDetailsPagePro
     window.addEventListener("storage", load);
     return () => window.removeEventListener("storage", load);
   }, []);
+
+  useEffect(() => {
+    if (!showSuccessToast) return;
+    const timeout = window.setTimeout(() => setShowSuccessToast(false), 3000);
+    return () => window.clearTimeout(timeout);
+  }, [showSuccessToast]);
 
   const application = useMemo(() => applications.find((item) => item.id === id) ?? null, [applications, id]);
 
@@ -65,7 +72,17 @@ export function ExecApplicationDetailsPage({ id }: ExecApplicationDetailsPagePro
       <ExecShell totalCount={applications.length || 0}>
         <div className="container mx-auto py-14">
           <div className="overflow-x-auto shadow-lg bg-white rounded px-8 py-8">
-            <div className="w-full px-4"><div className="text-right"><button className="btn main-blue-bg px-4 py-4 text-white">Сформировать отчет</button></div></div>
+            <div className="w-full px-4">
+              <div className="text-right">
+                <button
+                  type="button"
+                  className="btn main-blue-bg px-4 py-4 text-white"
+                  onClick={() => setShowSuccessToast(true)}
+                >
+                  Сформировать отчет
+                </button>
+              </div>
+            </div>
 
             <div className="grid grid-cols-12 grid-rows-6 px-2 request-header">
               <div className="flex justify-center w-full items-center col-span-12 sm:col-span-12 md:col-span-2 row-span-6">
@@ -86,7 +103,7 @@ export function ExecApplicationDetailsPage({ id }: ExecApplicationDetailsPagePro
                   <tr className="text-sm md:text-md"><th className="comforta-bold py-2">Дата подачи :</th><td className="comforta py-2">{application.submittedAt}</td></tr>
                   <tr className="text-sm md:text-md"><th className="comforta-bold py-2">Специальность :</th><td className="comforta py-2"><p>{ application.specialization}</p></td></tr>
                   <tr className="text-sm md:text-md"><th className="comforta-bold py-2">Регион :</th><td className="comforta py-2">{application.region || ""}</td></tr>
-                  <tr className="text-sm md:text-md"><th className="comforta-bold py-2">Район :</th><td className="comforta py-2">{application.district || ""}</td></tr>
+                  <tr className="text-sm md:text-md"><th className="comforta-bold py-2">Академия :</th><td className="comforta py-2">{application.academy || ""}</td></tr>
                 </tbody></table>
               </div>
               <div className="col-span-12 md:col-span-4 row-span-4">
@@ -108,7 +125,7 @@ export function ExecApplicationDetailsPage({ id }: ExecApplicationDetailsPagePro
                   <p className="comforta text-md md:text-lg">Указать должность, на какую планирует поступить:</p>
                   <div className="form-group mt-2 mb-4 text-md md:text-lg"><label htmlFor="vacancy" className="comforta cursor-pointer">Наименование должности/вакансия</label><div id="vacancy" className="bg-gray-300 my-1 block px-4 py-1 w-full rounded border-black border-solid border min-h-[38px]"><p>{application.specialization }</p></div></div>
                   <div className="form-group mt-2 mb-4 text-md md:text-lg"><label htmlFor="region" className="comforta cursor-pointer">Регион</label><input id="region" type="text" disabled value={application.region} className="bg-gray-300 my-1 block px-4 py-1 w-full rounded border-black border-solid border" /></div>
-                  <div className="form-group mt-2 mb-4 text-md md:text-lg"><label htmlFor="district" className="comforta cursor-pointer">Район</label><input id="district" type="text" disabled value={application.district} className="bg-gray-300 my-1 block px-4 py-1 w-full rounded border-black border-solid border" /></div>
+                  <div className="form-group mt-2 mb-4 text-md md:text-lg"><label htmlFor="district" className="comforta cursor-pointer">Академия</label><input id="district" type="text" disabled value={application.academy} className="bg-gray-300 my-1 block px-4 py-1 w-full rounded border-black border-solid border" /></div>
                   <div className="form-group mt-2 mb-4 text-md md:text-lg"><label htmlFor="phone" className="comforta cursor-pointer">Телефон</label><input id="phone" type="text" disabled value={application.phone} className="bg-gray-300 my-1 block px-4 py-1 w-full rounded border-black border-solid border" /></div>
                   <div className="form-group mt-2 mb-4 text-md md:text-lg"><label htmlFor="email" className="comforta cursor-pointer">Электронная почта</label><input id="email" type="email" disabled value={application.email} className="bg-gray-300 my-1 block px-4 py-1 w-full rounded border-black border-solid border" /></div>
                 </div>
@@ -163,7 +180,13 @@ export function ExecApplicationDetailsPage({ id }: ExecApplicationDetailsPagePro
             <hr />
             <div className="grid grid-cols-12 gap-3 px-4 py-12">
               <div className="col-span-12 sm:col-span-12 md:col-span-12 md:flex justify-between">
-                <button className="w-80 text-white main-blue-bg mt-5 text-sm px-8 py-3 rounded hover:bg-blue-700 shadow-md">Сформировать личное дело</button>
+                <button
+                  type="button"
+                  className="w-80 text-white main-blue-bg mt-5 text-sm px-8 py-3 rounded hover:bg-blue-700 shadow-md"
+                  onClick={() => setShowSuccessToast(true)}
+                >
+                  Сформировать личное дело
+                </button>
                 <button type="button" onClick={() => setIsRevisionModalOpen(true)} className="w-80 text-white bg-yellow-600 mt-5 text-sm px-8 py-3 rounded hover:bg-red-900 shadow-md">Отправить на доработку</button>
                 <button type="button" onClick={() => setIsRejectModalOpen(true)} className="w-80 text-white bg-red-600 mt-5 text-sm px-8 py-3 rounded hover:bg-red-900 shadow-md">Отклонить</button>
               </div>
@@ -218,6 +241,11 @@ export function ExecApplicationDetailsPage({ id }: ExecApplicationDetailsPagePro
           </div>
         ) : null}
       </ExecShell>
+      {showSuccessToast ? (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-[60] rounded bg-green-600 text-white px-5 py-3 shadow-lg">
+          Успешно
+        </div>
+      ) : null}
       <HomeExactSupportButton />
     </>
   );
