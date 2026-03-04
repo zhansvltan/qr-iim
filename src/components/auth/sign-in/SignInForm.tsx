@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { supabase } from "@/src/lib/supabase/client";
+import { signInLocalUser } from "@/src/lib/auth/localAuth";
 
 type SignInFormProps = {
   onSuccess?: (message: string) => void;
 };
 
 export function SignInForm({ onSuccess }: SignInFormProps) {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -21,37 +23,18 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
     setSuccessMessage(null);
     setLoading(true);
 
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (signInError) {
-      setError(signInError.message);
+    const result = signInLocalUser(email, password);
+    if (!result.ok) {
+      setError(result.message);
       setLoading(false);
       return;
-    }
-
-    const iin = data.user.user_metadata?.iin;
-
-    if (iin) {
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: data.user.id,
-        email: data.user.email,
-        iin,
-      });
-
-      if (profileError) {
-        setError(profileError.message);
-        setLoading(false);
-        return;
-      }
     }
 
     const message = "Вход выполнен успешно.";
     onSuccess?.(message);
     setSuccessMessage(message);
     setLoading(false);
+    router.push("/");
   };
 
   return (

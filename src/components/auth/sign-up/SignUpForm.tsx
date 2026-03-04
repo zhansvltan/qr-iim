@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
-import { supabase } from "@/src/lib/supabase/client";
+import { registerLocalUser } from "@/src/lib/auth/localAuth";
 
 type SignUpFormProps = {
   onSuccess?: (message: string) => void;
@@ -11,6 +12,7 @@ type SignUpFormProps = {
 const IIN_REGEX = /^\d{12}$/;
 
 export function SignUpForm({ onSuccess }: SignUpFormProps) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [surname, setSurname] = useState("");
   const [patronymic, setPatronymic] = useState("");
@@ -62,45 +64,26 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
 
     setLoading(true);
 
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    const result = registerLocalUser({
+      iin,
+      name: name.trim(),
+      surname: surname.trim(),
+      patronymic: patronymic.trim(),
+      birthDay,
+      gender,
+      phone: phone.trim(),
       email,
       password,
-      options: {
-        data: {
-          iin,
-          name: name.trim(),
-          surname: surname.trim(),
-          patronymic: patronymic.trim(),
-          birthDay,
-          gender,
-          phone: phone.trim(),
-        },
-      },
+      agreed,
     });
 
-    if (signUpError) {
-      setError(signUpError.message);
+    if (!result.ok) {
+      setError(result.message);
       setLoading(false);
       return;
     }
 
-    if (data.session) {
-      const { error: profileError } = await supabase.from("profiles").upsert({
-        id: data.session.user.id,
-        email,
-        iin,
-      });
-
-      if (profileError) {
-        setError(profileError.message);
-        setLoading(false);
-        return;
-      }
-    }
-
-    const message = data.session
-      ? "Аккаунт создан и вы авторизованы."
-      : "Аккаунт создан. Подтвердите email и войдите.";
+    const message = "Аккаунт создан. Теперь войдите в систему.";
 
     onSuccess?.(message);
     setSuccessMessage(message);
@@ -116,6 +99,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     setPhone("");
     setAgreed(false);
     setLoading(false);
+    router.push("/sign-in");
   };
 
   return (
