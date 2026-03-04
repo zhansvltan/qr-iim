@@ -1,20 +1,17 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
-
-const htmlPath = join(process.cwd(), "src/content/qyzmet-home.html");
-const cssPath = join(process.cwd(), "src/content/qyzmet-home.css");
-
-const html = readFileSync(htmlPath, "utf-8");
-const css = readFileSync(cssPath, "utf-8");
+import { HomeExactAdvantages } from "./HomeExactAdvantages";
+import { HomeExactHero } from "./HomeExactHero";
+import { HomeExactSteps } from "./HomeExactSteps";
+import { HomeExactSupportButton } from "./HomeExactSupportButton";
 
 export function HomeExact() {
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: css }} />
-      <div
-        className="qyzmet-exact-root"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      <main id="main" className="main">
+        <HomeExactHero />
+        <HomeExactSteps />
+        <HomeExactAdvantages />
+      </main>
+      <HomeExactSupportButton />
     </>
   );
 }

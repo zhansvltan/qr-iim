@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Golos_Text } from "next/font/google";
 import "./globals.css";
+import "@/src/content/qyzmet-components.global.css";
+import "@/src/content/qyzmet-auth.global.css";
+import { HomeExactFooter } from "@/src/components/home/HomeExactFooter";
+import { HomeExactHeader } from "@/src/components/home/HomeExactHeader";
 
 const golosText = Golos_Text({
   variable: "--font-golos-text",
@@ -24,10 +28,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${golosText.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${golosText.variable} ${geistMono.variable} antialiased`}>
+        <div className="wrapper">
+          <HomeExactHeader />
+          {children}
+          <HomeExactFooter />
+        </div>
       </body>
     </html>
   );

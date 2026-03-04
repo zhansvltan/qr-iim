@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { supabase } from "@/src/lib/supabase/client";
 
@@ -47,46 +48,73 @@ export function SignInForm({ onSuccess }: SignInFormProps) {
       }
     }
 
-    const message = "Signed in successfully.";
+    const message = "Вход выполнен успешно.";
     onSuccess?.(message);
     setSuccessMessage(message);
     setLoading(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
-      <label className="flex flex-col gap-2 text-sm text-main-text">
-        Email
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          className="rounded-lg border border-break-line px-3 py-2 outline-none focus:border-interactive-color"
-        />
-      </label>
+    <>
+      <ul id="tabs-tabFill" role="tablist" className="nav nav-tabs flex flex-col md:flex-row flex-wrap list-none border-b-0 pl-0 mb-4">
+        <li role="login" className="nav-item flex-auto text-center px-4">
+          <span className="cursor-pointer montserrat nav-link w-full block text-lg leading-tight border-x-0 border-t-0 border-b-2 border-transparent px-6 py-3 my-2 text-black active">
+            Логин/пароль
+          </span>
+        </li>
+        <li role="ecp" className="nav-item flex-auto text-center px-4">
+          <span className="cursor-pointer montserrat nav-link w-full block text-lg leading-tight border-x-0 border-t-0 border-b-2 border-transparent px-6 py-3 my-2 text-black non-active">
+            ЭЦП
+          </span>
+        </li>
+      </ul>
 
-      <label className="flex flex-col gap-2 text-sm text-main-text">
-        Password
-        <input
-          type="password"
-          required
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className="rounded-lg border border-break-line px-3 py-2 outline-none focus:border-interactive-color"
-        />
-      </label>
+      <form onSubmit={handleSubmit} noValidate>
+        <div className="mx-auto mt-8 sm:w-full md:w-1/2 text-center px-4">
+          <div className="form-group my-8">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
+              placeholder="Email"
+            />
+          </div>
 
-      {error ? <p className="text-sm text-error-text">{error}</p> : null}
-      {successMessage ? <p className="text-sm text-success-text">{successMessage}</p> : null}
+          <div className="form-group my-8">
+            <input
+              type="password"
+              required
+              minLength={6}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
+              placeholder="Пароль"
+            />
+            <small>
+              Минимальная длина пароля должна превышать 6 знаков.
+            </small>
+          </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-lg bg-interactive-color px-4 py-2 font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-      >
-        {loading ? "Signing in..." : "Sign in"}
-      </button>
-    </form>
+          {error ? <p className="text-sm text-error-text">{error}</p> : null}
+          {successMessage ? <p className="text-sm text-success-text">{successMessage}</p> : null}
+
+          <button type="submit" disabled={loading} className="auth-submit bg-gray-500 inline-block montserrat mt-5 px-8 py-3 rounded text-sm text-white">
+            {loading ? "Вход..." : "Войти"}
+          </button>
+        </div>
+      </form>
+
+      <section className="auth-links w-full py-4">
+        <Link href="/sign-up" className="text-gray-700 underline">
+          Регистрация
+        </Link>
+        <br />
+        <a className="text-gray-700 underline">Подтвердить аккаунт</a>
+        <br />
+        <a className="text-gray-700 underline">Забыли пароль?</a>
+      </section>
+    </>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { supabase } from "@/src/lib/supabase/client";
 
@@ -13,6 +14,7 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [iin, setIin] = useState("");
+  const [agreed, setAgreed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,12 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     setSuccessMessage(null);
 
     if (!IIN_REGEX.test(iin)) {
-      setError("IIN must be exactly 12 digits.");
+      setError("ИИН должен состоять из 12 цифр.");
+      return;
+    }
+
+    if (!agreed) {
+      setError("Необходимо согласие на обработку персональных данных.");
       return;
     }
 
@@ -60,8 +67,8 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     }
 
     const message = data.session
-      ? "Account created and signed in."
-      : "Account created. Check your email to confirm and then sign in.";
+      ? "Аккаунт создан и вы авторизованы."
+      : "Аккаунт создан. Подтвердите email и войдите.";
 
     onSuccess?.(message);
     setSuccessMessage(message);
@@ -69,58 +76,81 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     setEmail("");
     setPassword("");
     setIin("");
+    setAgreed(false);
     setLoading(false);
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
-      <label className="flex flex-col gap-2 text-sm text-main-text">
-        Email
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          className="rounded-lg border border-break-line px-3 py-2 outline-none focus:border-interactive-color"
-        />
-      </label>
+    <form onSubmit={handleSubmit} noValidate>
+      <div className="mx-auto mt-8 sm:w-full md:w-1/2 text-center px-4">
+        <div className="form-group my-8">
+          <input
+            type="text"
+            required
+            inputMode="numeric"
+            pattern="\\d{12}"
+            maxLength={12}
+            value={iin}
+            onChange={(event) => setIin(event.target.value.replace(/\D/g, ""))}
+            className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
+            placeholder="ИИН"
+          />
+        </div>
 
-      <label className="flex flex-col gap-2 text-sm text-main-text">
-        Password
-        <input
-          type="password"
-          required
-          minLength={6}
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          className="rounded-lg border border-break-line px-3 py-2 outline-none focus:border-interactive-color"
-        />
-      </label>
+        <div className="form-group my-8">
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
+            placeholder="Email"
+          />
+          <small>
+            Этот email будет использоваться для подтверждения аккаунта и сброса пароля.
+          </small>
+        </div>
 
-      <label className="flex flex-col gap-2 text-sm text-main-text">
-        IIN
-        <input
-          type="text"
-          required
-          inputMode="numeric"
-          pattern="\\d{12}"
-          maxLength={12}
-          value={iin}
-          onChange={(event) => setIin(event.target.value.replace(/\D/g, ""))}
-          className="rounded-lg border border-break-line px-3 py-2 outline-none focus:border-interactive-color"
-        />
-      </label>
+        <div className="form-group my-8">
+          <input
+            type="password"
+            required
+            minLength={6}
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            className="montserrat text-center w-full py-2 px-4 bg-gray-1 border-solid border-0 border-b border-black"
+            placeholder="Пароль"
+          />
+          <small>
+            Минимальная длина пароля: 6 символов.
+          </small>
+        </div>
 
-      {error ? <p className="text-sm text-error-text">{error}</p> : null}
-      {successMessage ? <p className="text-sm text-success-text">{successMessage}</p> : null}
+        <div className="items-center my-8">
+          <input
+            type="checkbox"
+            id="confirmation"
+            checked={agreed}
+            onChange={(event) => setAgreed(event.target.checked)}
+          />
+          <label htmlFor="confirmation" className="ml-2 montserrat light-gray-1 cursor-pointer text-sm">
+            Я согласен на обработку персональных данных
+          </label>
+        </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="rounded-lg bg-interactive-color px-4 py-2 font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-      >
-        {loading ? "Creating..." : "Create account"}
-      </button>
+        {error ? <p className="text-sm text-error-text">{error}</p> : null}
+        {successMessage ? <p className="text-sm text-success-text">{successMessage}</p> : null}
+
+        <button type="submit" disabled={loading} className="auth-submit bg-gray-500 inline-block montserrat mt-5 px-8 py-3 rounded text-sm text-white">
+          {loading ? "Регистрация..." : "Регистрация"}
+        </button>
+
+        <section className="auth-links w-full py-4">
+          <Link href="/sign-in" className="text-gray-700 underline">
+            Уже есть аккаунт? Войти
+          </Link>
+        </section>
+      </div>
     </form>
   );
 }
