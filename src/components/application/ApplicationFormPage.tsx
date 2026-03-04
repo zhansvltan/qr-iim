@@ -6,7 +6,6 @@ import { HomeExactSupportButton } from "@/src/components/home/HomeExactSupportBu
 import {
   getCurrentLocalSession,
   getCurrentLocalUser,
-  signOutLocalUser,
   subscribeToLocalAuthChanges,
 } from "@/src/lib/auth/localAuth";
 import { getVacancyById } from "@/src/lib/vacancyData";
@@ -34,8 +33,11 @@ const EDUCATION_OPTIONS = [
   "Послевузовское Высшее",
 ];
 
-const TEST_PROGRAM_OPTIONS = ["1 программа", "2 программа", "3 программа"];
 const APPLICATIONS_STORAGE_KEY = "qyzmet_applications";
+
+function RequiredMark() {
+  return <span className="text-red-600 ml-1">*</span>;
+}
 
 export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
   const session = useSyncExternalStore(
@@ -55,6 +57,9 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
   const [testCertificateFileName, setTestCertificateFileName] = useState("");
   const [isServedContractInNGRK, setIsServedContractInNGRK] = useState("");
   const [isServedInPolice, setIsServedInPolice] = useState("");
+  const [isChildOfKilledOfficer, setIsChildOfKilledOfficer] = useState("");
+  const [hasEntOver100, setHasEntOver100] = useState("");
+  const [hasAltynBelgi, setHasAltynBelgi] = useState("");
   const [consent, setConsent] = useState(false);
 
   const [relatives, setRelatives] = useState<RelativeItem[]>([]);
@@ -124,6 +129,11 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
       return;
     }
 
+    if (!isChildOfKilledOfficer || !hasEntOver100 || !hasAltynBelgi) {
+      setError("Заполните обязательные поля формы.");
+      return;
+    }
+
     if (!consent) {
       setError("Необходимо дать согласие на обработку персональных данных.");
       return;
@@ -153,6 +163,9 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
         testCertificateFileName,
         isServedContractInNGRK,
         isServedInPolice,
+        isChildOfKilledOfficer,
+        hasEntOver100,
+        hasAltynBelgi,
         relatives,
         consent,
       },
@@ -193,7 +206,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
         <section>
           <div className="container mx-auto h-auto py-4 text-left">
             <h1 className="light-gray-1 text-2xl px-2">
-              Подача заявки на службу в органы внутренних дел
+              Подача заявки на Академию в органы внутренних дел
             </h1>
             <form onSubmit={handleSubmit} noValidate>
               <div
@@ -227,6 +240,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                           className="comforta required cursor-pointer"
                         >
                           Образование
+                          <RequiredMark />
                         </label>
                         <select
                           id="education"
@@ -358,15 +372,19 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                         <p className="comforta cursor-pointer">
                           <label className="required">
                             Документ об образовании с приложением(PDF)
+                            <RequiredMark />
                           </label>
                         </p>
                         <div className="md:flex">
                           <div className="md:w-full flex flex-col gap-2">
+                            <label htmlFor="diploma" className="cursor-pointer text-sm">
+                              Прикрепить
+                            </label>
                             <input
                               id="diploma"
                               type="file"
                               accept="application/msword,application/pdf"
-                              className="block"
+                              className="hidden"
                               onChange={(event) =>
                                 setDiplomaFileName(
                                   event.target.files?.[0]?.name ?? "",
@@ -406,15 +424,19 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                         <p className="comforta cursor-pointer">
                           <label className="required">
                             Результаты ЕНТ (PDF)
+                            <RequiredMark />
                           </label>
                         </p>
                         <div className="md:flex">
                           <div className="md:w-full flex flex-col gap-2">
+                            <label htmlFor="officerTestCertificate" className="cursor-pointer text-sm">
+                              Прикрепить
+                            </label>
                             <input
                               id="officerTestCertificate"
                               type="file"
                               accept="application/pdf"
-                              className="block"
+                              className="hidden"
                               onChange={(event) =>
                                 setTestCertificateFileName(
                                   event.target.files?.[0]?.name ?? "",
@@ -433,6 +455,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
 
                     <label className="comforta required cursor-pointer">
                       Служили ли вы по контракту в НГ РК?
+                      <RequiredMark />
                     </label>
                     <select
                       className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
@@ -447,13 +470,14 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     </select>
 
                     <label className="comforta required cursor-pointer">
-                      Служили ли вы ранее в органах полиции? (более 3-x лет)
+                      Служили ли вы ранее в органах полиции?
+                      <RequiredMark />
                     </label>
                     <select
                       className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
-                      value={isServedInPolice}
+                      value={isChildOfKilledOfficer}
                       onChange={(event) =>
-                        setIsServedInPolice(event.target.value)
+                        setIsChildOfKilledOfficer(event.target.value)
                       }
                     >
                       <option value="">—</option>
@@ -464,12 +488,13 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                     <label className="comforta required cursor-pointer">
                       Являетесь ли вы ребёнком сотрудника ОВД, погибшего или
                       получившего увечье при исполнении
+                      <RequiredMark />
                     </label>
                     <select
                       className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
-                      value={isServedInPolice}
+                      value={hasEntOver100}
                       onChange={(event) =>
-                        setIsServedInPolice(event.target.value)
+                        setHasEntOver100(event.target.value)
                       }
                     >
                       <option value="">—</option>
@@ -479,12 +504,13 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
 
                     <label className="comforta required cursor-pointer">
                       Являетесь ли вы обладателем сертификата более 100 баллов на ЕНТ
+                      <RequiredMark />
                     </label>
                     <select
                       className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
-                      value={isServedInPolice}
+                      value={hasAltynBelgi}
                       onChange={(event) =>
-                        setIsServedInPolice(event.target.value)
+                        setHasAltynBelgi(event.target.value)
                       }
                     >
                       <option value="">—</option>
@@ -494,6 +520,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
 
                     <label className="comforta required cursor-pointer">
                       Являетесь ли вы обладателем «Алтын белгі»
+                      <RequiredMark />
                     </label>
                     <select
                       className="my-1 block px-4 py-1.5 bg-white w-full rounded border-black border-solid border"
@@ -522,6 +549,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                       >
                         Я даю согласие на сбор и обработку своих Персональных
                         данных
+                        <RequiredMark />
                       </label>
                     </div>
                   </div>
@@ -531,6 +559,7 @@ export function ApplicationFormPage({ vacancyId }: ApplicationFormPageProps) {
                   <p className="font-normal text-black my-4 text-xl px-2">
                     <label className="required">
                       Анкета на близких родственников
+                      <RequiredMark />
                     </label>
                   </p>
                   <div className="overflow-x-auto">
